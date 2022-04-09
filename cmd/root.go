@@ -40,7 +40,7 @@ func init() {
 		"Pair of ip:port to listen on")
 
 	rootCmd.Flags().StringVarP(&DatabaseURI, "databaseURI", "d", "",
-		"Database DSN for loyalty store")
+		"Database URI for loyalty store")
 
 	rootCmd.Flags().StringVarP(&AccrualAddress, "accrualAddress", "r", defaultAccrualAddress,
 		"Pair of ip:port to listen on")

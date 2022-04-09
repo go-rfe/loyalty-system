@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-rfe/logging/log"
+	"github.com/go-rfe/loyalty-system/internal/repository/orders"
 	"github.com/go-rfe/loyalty-system/internal/repository/users"
 )
 
@@ -19,7 +20,10 @@ type Config struct {
 	AccrualAddress string `env:"ACCRUAL_SYSTEM_ADDRESS"`
 	LogLevel       string `env:"LOG_LEVEL"`
 
-	UserStore users.Store
+	UserStore   users.Store
+	OrdersStore orders.Store
+
+	jwtToken *jwtauth.JWTAuth
 }
 
 type LoyaltyServer struct {
@@ -36,10 +40,10 @@ func (s *LoyaltyServer) Start(ctx context.Context) {
 		s.Cfg.AuthToken = getRandomToken()
 	}
 
-	err := initUserStore(serverContext, s.Cfg)
-	if err != nil {
-		log.Fatal().Msgf("Failed to initialize user store: %q", err)
-	}
+	s.Cfg.jwtToken = jwtauth.New("HS256", s.Cfg.AuthToken, s.Cfg.AuthToken)
+
+	closeUsersStore := initUsersStore(s.Cfg)
+	closeOrdersStore := initOrdersStore(s.Cfg)
 
 	go s.startListener()
 	log.Info().Msgf("Start listener on %s", s.Cfg.ServerAddress)
@@ -47,11 +51,18 @@ func (s *LoyaltyServer) Start(ctx context.Context) {
 	log.Info().Msgf("%s signal received, graceful shutdown the server", <-getSignalChannel())
 	s.stopListener()
 
+	if err := closeUsersStore(); err != nil {
+		log.Error().Err(err).Msg("Some error occurred while store close")
+	}
+	if err := closeOrdersStore(); err != nil {
+		log.Error().Err(err).Msg("Some error occurred while store close")
+	}
+
 	serverCancel()
 }
 
 func (s *LoyaltyServer) AuthToken() *jwtauth.JWTAuth {
-	return jwtauth.New("HS256", s.Cfg.AuthToken, nil)
+	return s.Cfg.jwtToken
 }
 
 func getSignalChannel() chan os.Signal {

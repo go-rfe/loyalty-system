@@ -1,0 +1,49 @@
+---
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14.2
+    shm_size: 1gb
+    environment:
+      POSTGRES_DB: loyalty
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+    ports:
+      - "5432:5432"
+  server:
+    build: ./
+    restart: always
+    entrypoint: ["/app/bin/server"]
+    environment:
+      LOG_LEVEL: "DEBUG"
+      DATABASE_URI: "postgres://dbuser:dbpass@postgres:5432/loyalty"
+      RUN_ADDRESS: "0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+  statictests:
+    build: ./
+    entrypoint:
+      - "go"
+      - "vet"
+      - "-vettool=/usr/bin/statictest"
+      - "./..."
+  tests:
+    build: ./
+    entrypoint:
+     - "gophermarttest"
+     - "-test.v"
+     - "-test.run=^TestGophermart/TestEndToEnd$$"
+     - "-gophermart-binary-path=/app/bin/server"
+     - "-gophermart-host=server"
+     - "-gophermart-port=8080"
+     - '-gophermart-database-uri="postgres://dbuser:dbpass@postgres:5432/loyalty"'
+     - "-accrual-binary-path=/usr/bin/accural"
+     - "-accrual-host=127.0.0.1"
+     - "-accrual-port=8081"
+     - '-accrual-database-uri="postgres://dbuser:dbpass@postgres:5432/loyalty"'
+    ports:
+      - "8080"
+      - "8081"
+    environment:
+      LOG_LEVEL: "DEBUG"

@@ -1,0 +1,382 @@
+// Code generated for package migrations by go-bindata DO NOT EDIT. (@generated)
+// sources:
+// 000001_create_users_table.down.sql
+// 000001_create_users_table.up.sql
+// 000002_create_orders_table.down.sql
+// 000002_create_orders_table.up.sql
+// 000003_create_withdrawals_table.down.sql
+// 000003_create_withdrawals_table.up.sql
+// bindata.go
+package migrations
+
+import (
+	"bytes"
+	"compress/gzip"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+)
+
+func bindataRead(data []byte, name string) ([]byte, error) {
+	gz, err := gzip.NewReader(bytes.NewBuffer(data))
+	if err != nil {
+		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, gz)
+	clErr := gz.Close()
+
+	if err != nil {
+		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+	if clErr != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+type asset struct {
+	bytes []byte
+	info  os.FileInfo
+}
+
+type bindataFileInfo struct {
+	name    string
+	size    int64
+	mode    os.FileMode
+	modTime time.Time
+}
+
+// Name return file name
+func (fi bindataFileInfo) Name() string {
+	return fi.name
+}
+
+// Size return file size
+func (fi bindataFileInfo) Size() int64 {
+	return fi.size
+}
+
+// Mode return file mode
+func (fi bindataFileInfo) Mode() os.FileMode {
+	return fi.mode
+}
+
+// Mode return file modify time
+func (fi bindataFileInfo) ModTime() time.Time {
+	return fi.modTime
+}
+
+// IsDir return file whether a directory
+func (fi bindataFileInfo) IsDir() bool {
+	return fi.mode&os.ModeDir != 0
+}
+
+// Sys return file is sys mode
+func (fi bindataFileInfo) Sys() interface{} {
+	return nil
+}
+
+var __000001_create_users_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\xf0\x74\x53\x70\x8d\xf0\x0c\x0e\x09\x56\x28\x2d\x4e\x2d\x2a\xb6\x06\x04\x00\x00\xff\xff\xc8\x3d\x4e\x55\x1b\x00\x00\x00")
+
+func _000001_create_users_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000001_create_users_tableDownSql,
+		"000001_create_users_table.down.sql",
+	)
+}
+
+func _000001_create_users_tableDownSql() (*asset, error) {
+	bytes, err := _000001_create_users_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000001_create_users_table.down.sql", size: 27, mode: os.FileMode(420), modTime: time.Unix(1649405285, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000001_create_users_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x0e\x72\x75\x0c\x71\x55\x08\x71\x74\xf2\x71\x55\xf0\x74\x53\xf0\xf3\x0f\x51\x70\x8d\xf0\x0c\x0e\x09\x56\x28\x2d\x4e\x2d\x2a\xd6\xe0\x52\x50\x50\x50\xc8\xc9\x4f\xcf\xcc\x53\x08\x73\x0c\x72\xf6\x70\x0c\x52\xd0\x30\x35\xd0\x54\x08\x08\xf2\xf4\x75\x0c\x8a\x54\xf0\x76\x8d\xd4\x01\xab\x29\x48\x2c\x2e\x2e\xcf\x2f\x4a\x41\x28\x33\x32\x35\xd5\xe4\xd2\xb4\xe6\x02\x04\x00\x00\xff\xff\xd2\x9d\x1f\xd1\x64\x00\x00\x00")
+
+func _000001_create_users_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000001_create_users_tableUpSql,
+		"000001_create_users_table.up.sql",
+	)
+}
+
+func _000001_create_users_tableUpSql() (*asset, error) {
+	bytes, err := _000001_create_users_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000001_create_users_table.up.sql", size: 100, mode: os.FileMode(420), modTime: time.Unix(1649439382, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000002_create_orders_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\xf0\x74\x53\x70\x8d\xf0\x0c\x0e\x09\x56\xc8\x2f\x4a\x49\x2d\x2a\xb6\x06\x04\x00\x00\xff\xff\x9f\xfb\xdd\x37\x1c\x00\x00\x00")
+
+func _000002_create_orders_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000002_create_orders_tableDownSql,
+		"000002_create_orders_table.down.sql",
+	)
+}
+
+func _000002_create_orders_tableDownSql() (*asset, error) {
+	bytes, err := _000002_create_orders_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000002_create_orders_table.down.sql", size: 28, mode: os.FileMode(420), modTime: time.Unix(1649405294, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000002_create_orders_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x54\xcc\xbd\x4e\x86\x40\x10\x85\xe1\x9e\xab\x38\xdd\x07\x89\x05\x8d\x95\xd5\x80\x83\x6e\x84\x95\xcc\x8e\x3f\x54\x66\x05\x62\x4c\x10\xcc\x2e\x7b\xff\x46\x48\x4c\xac\x9f\xf3\x9e\x5a\x98\x94\xa1\x54\xb5\x0c\xd3\xc0\x3e\x2a\xf8\xd5\x38\x75\xd8\xc2\x34\x87\x98\x67\x00\xb0\xa6\xaf\xf7\x39\xa0\x32\x77\xc6\x2a\x7a\x31\x1d\xc9\x80\x07\x1e\xae\x0e\x5e\xb6\x8f\xcf\x15\x78\x26\xa9\xef\x49\x90\x5f\x97\x05\x84\x1b\x16\xb6\x35\x3b\xa4\xf8\x7b\x74\x8c\x8a\x33\x88\xbb\xdf\x53\xfc\x1f\xdc\x72\x43\x4f\xad\xe2\x62\xf9\xe5\x72\xce\xfc\x38\x86\xe4\x17\x08\x53\xfb\xe7\xe5\x69\xe9\x7b\xd9\xfc\x34\x4f\x6f\x7e\x87\x9a\x8e\x9d\x52\xd7\x67\xc5\x4d\xf6\x13\x00\x00\xff\xff\x3a\xd0\x20\xa7\xd3\x00\x00\x00")
+
+func _000002_create_orders_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000002_create_orders_tableUpSql,
+		"000002_create_orders_table.up.sql",
+	)
+}
+
+func _000002_create_orders_tableUpSql() (*asset, error) {
+	bytes, err := _000002_create_orders_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000002_create_orders_table.up.sql", size: 211, mode: os.FileMode(420), modTime: time.Unix(1649440316, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000003_create_withdrawals_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\xf0\x74\x53\x70\x8d\xf0\x0c\x0e\x09\x56\x28\xcf\x2c\xc9\x48\x29\x4a\x2c\x4f\xcc\x29\xb6\x06\x04\x00\x00\xff\xff\x7a\x2b\x6d\x0d\x21\x00\x00\x00")
+
+func _000003_create_withdrawals_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000003_create_withdrawals_tableDownSql,
+		"000003_create_withdrawals_table.down.sql",
+	)
+}
+
+func _000003_create_withdrawals_tableDownSql() (*asset, error) {
+	bytes, err := _000003_create_withdrawals_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000003_create_withdrawals_table.down.sql", size: 33, mode: os.FileMode(420), modTime: time.Unix(1649405797, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __000003_create_withdrawals_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x4c\xcb\xbd\x8a\x83\x40\x14\xc5\xf1\xde\xa7\x38\xe5\x08\x5b\x6c\xb3\xd5\x56\xb3\x72\xdd\x0c\xa8\x09\x77\x2e\x21\x9d\x98\x38\x24\x82\x1f\x61\xae\xe2\xeb\x07\x34\x45\xca\xc3\xf9\xff\x32\x26\x2b\x04\xb1\x7f\x05\xc1\xe5\xa8\x8e\x02\xba\x38\x2f\x1e\x6b\x37\x3f\xda\xd8\xac\x4d\xaf\x26\x01\x80\x7e\xba\x77\x23\x70\xb6\x9c\x1d\x2c\xc3\xfc\x7c\xa7\x60\xca\x89\xa9\xca\xc8\x63\xd1\x10\xd5\x6c\x51\xfa\xb5\x81\x29\xb6\x21\xd6\xe3\x32\x5c\x43\x84\xab\x84\xfe\x89\x3f\xc5\xf6\xab\xd9\x83\xb7\xd1\x65\x00\x93\x2d\xf6\xf5\x8c\xd3\x2d\xa8\x86\xb6\x6e\x66\x88\x2b\xc9\x8b\x2d\x4f\x49\xfa\x9b\xbc\x02\x00\x00\xff\xff\xd9\x02\x75\xad\xb9\x00\x00\x00")
+
+func _000003_create_withdrawals_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__000003_create_withdrawals_tableUpSql,
+		"000003_create_withdrawals_table.up.sql",
+	)
+}
+
+func _000003_create_withdrawals_tableUpSql() (*asset, error) {
+	bytes, err := _000003_create_withdrawals_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "000003_create_withdrawals_table.up.sql", size: 185, mode: os.FileMode(420), modTime: time.Unix(1649405882, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _bindataGo = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xcc\x57\x6f\x6f\xe2\xb8\x13\x7e\x1d\x7f\x0a\x2f\xd2\xae\x92\x9f\xf8\x85\x90\x3f\xfc\x93\x90\x4e\xbb\xdd\x93\xfa\xe2\xba\xd2\xb5\xfb\xea\x7c\x42\x4e\x62\x53\xeb\x20\xa6\x4e\x58\x4c\xab\x7e\xf7\xd3\xd8\x09\x85\x96\x06\x7a\xdb\x93\xae\x92\x89\x6d\xc6\xcf\x3c\x33\xe3\x67\x52\x7a\x3d\xfc\x45\xe6\x0c\xcf\x59\xc1\x14\xad\x58\x8e\xb9\x54\x78\x45\xb3\xbf\xe8\x9c\xe1\xa5\x98\x2b\x5a\x09\x59\x94\x38\xdd\xe2\xb9\xfc\x7f\x2a\x8a\x9c\x56\x14\x5f\x7c\xc3\x57\xdf\x6e\xf0\xd7\x8b\xcb\x1b\x1f\xbb\xbf\xec\x4e\x7b\xa8\xd7\xc3\xa5\x5c\xab\x8c\x95\x13\x98\x07\xf0\xd7\x9f\x65\x8a\xd1\x8a\xcd\xd6\x25\x53\xe5\xac\xa2\xe9\x82\xf9\xb9\xdc\x14\x7e\x79\xb7\x68\xb7\x5a\xaf\x0e\x6c\xc2\xc6\x46\xaa\xbc\x05\xea\xb8\xd9\x33\xac\xa8\x31\xda\x88\xea\x36\x57\x74\x43\x17\xaf\x02\xb6\xd8\x3e\xa1\xd6\xc9\xf1\xe7\x12\xbd\x4c\x20\x42\x62\xb9\x92\xaa\xc2\x2e\x72\x3a\xe9\xb6\x62\x65\x07\x39\x9d\x4c\x2e\x57\x8a\x95\x65\x6f\x7e\x2f\x56\xb0\xc1\x97\x15\x3c\x84\xb4\x9f\x3d\x21\xd7\x95\x58\xc0\x42\x9a\x03\x2b\x5a\xdd\xf6\xb8\x58\x30\x98\xc0\x46\x59\x29\x51\xcc\xcd\x77\x95\x58\xb2\x0e\xf2\x10\xe2\xeb\x22\x6b\xd8\xfc\xce\x68\xee\x9a\x9a\xfd\xf1\x27\xb8\xed\xe2\x82\x2e\x19\xb6\xc7\x3c\xec\x36\xbb\x4c\x29\xa9\x3c\xfc\x80\x9c\xf9\xbd\x59\xe1\xc9\x14\x03\x2b\xff\x8a\x6d\x00\x84\x29\xd7\xd0\x86\xf5\xe7\x35\xe7\x4c\x19\x58\xcf\x43\x8e\xe0\xe6\xc0\x87\x29\x2e\xc4\x02\x20\x1c\xc5\xaa\xb5\x2a\x60\xd9\xc5\x7c\x59\xf9\x5f\x01\x9d\xbb\x1d\x00\xc2\x1f\xef\x26\xf8\xe3\x8f\x8e\x65\x62\x7c\x79\xc8\x79\x44\xc8\xf9\x41\x15\x4e\xd7\x1c\x5b\x3f\xd6\x09\x72\x66\x96\xce\x14\x0b\xe9\x7f\x91\xab\xad\xfb\x29\x5d\xf3\x2e\x9e\xdf\x7b\xc8\xc9\x16\x5f\x1b\xa6\xfe\x97\x85\x2c\x99\xeb\xa1\xf7\xe2\x03\x30\x16\xff\x15\x20\xa6\x94\xe5\x5d\x6f\xa6\x6b\xee\x7f\x06\xea\xae\xd7\x05\x0b\xf4\x88\x50\xb5\x5d\x31\x4c\xcb\x92\x55\x90\xf2\x75\x56\x01\x8a\x89\xaf\xae\x07\x72\x44\xc1\x25\xc6\xb2\xf4\x7f\x15\x0b\x76\x59\x70\xb9\x3b\x57\x97\xb0\xd9\xdf\x43\x30\x35\xc4\xb8\x2e\x23\x72\x4a\x71\x6f\xd6\xa2\xa8\x06\x31\x72\x96\x20\x69\xbc\x03\xfd\x4d\xe6\xcc\x6c\xde\x88\x25\xc3\x70\x4d\x7c\x98\x81\x9f\x5e\x0f\x5f\x01\x56\x1d\x02\xdc\x2c\x93\x06\x7b\x87\x5c\x2e\x9e\x93\xf0\x8c\xbd\xeb\xd5\xae\x81\xcc\xee\xac\x6f\x4e\x5a\xd4\x6b\x60\xb4\x8f\x0a\x14\x5b\x50\xc1\xde\xf5\x6c\x00\x87\xa0\xe6\xa0\x05\x85\x40\x0e\x40\x21\xd0\x16\x50\xb0\x77\xbd\xfd\x34\x1c\x42\x9b\xe3\xaf\x43\x0b\xbe\x35\xd9\x6a\xf7\x00\xa9\x74\xbd\xa7\xb4\xbe\x70\xb1\x97\xeb\xcb\xf2\x42\xa8\x03\x37\x9b\x5b\x56\xdd\x32\x85\x29\xce\x85\x62\x59\x25\xd5\xb6\xc5\x9d\x39\xef\x7a\x38\x95\x72\xf1\x32\x94\x4f\xb2\xf4\x21\x0e\xf0\xf1\x61\x8a\x83\xa6\x14\xdb\xf2\xc0\xa5\x28\x71\xb9\x2d\x4f\xe5\xee\x7a\x5b\xda\x7a\x30\xc5\x69\xc6\x1e\x1e\xf7\xfc\xd5\x97\x1b\xf4\x3a\x9b\xbd\xda\xbc\x2f\xe4\xa6\xb8\xbe\x5b\xe0\x69\x7d\xd5\xdd\x0e\xd1\x7d\x4e\xf4\x28\x25\x3a\x18\x11\x1d\x04\xc7\x07\xe7\x44\x0f\x43\xa2\x83\x31\xd1\x1c\x9e\x9c\xe8\x24\xb0\x67\x86\x7d\xa2\x87\xb1\xdd\x87\x79\x92\x10\xcd\x03\xbb\x97\x44\x44\x0f\x03\xa2\x47\xb9\xdd\x0b\x32\xa2\x03\x66\x71\x92\x01\xd1\xe1\x88\xe8\x30\x27\x3a\x66\xf6\x19\x52\xa2\xd3\x01\xd1\x01\x8c\xf8\xd0\x3f\x8c\x6c\x44\x74\x54\xdb\x83\x9f\x7e\xba\xcf\xb3\xd3\x34\xda\x93\x09\xa8\x7b\xc2\xb1\x5e\xdb\x74\x8e\xbd\x5e\x8d\x1c\xe7\x74\x4e\xbb\xc8\x71\x3a\xa7\xdf\xad\x9d\x2e\x72\x3c\xa8\xd4\x79\x44\x81\xe3\xff\x4c\xb3\xda\xe7\x68\xba\xd5\xee\x95\x70\x6e\xb4\xa7\xba\xf0\xae\x79\x9a\xf6\x37\x99\x3e\xbf\x80\x0f\xd0\x4b\x26\xf8\xac\x20\x4d\x6f\x99\xe0\x70\xd8\x35\x97\x7a\xb2\x2f\x78\x37\x0e\x03\xcf\xec\x83\x0c\x27\x56\xa6\xdf\x0b\xa1\xdd\xfe\x20\x1e\xc7\x41\x12\x8e\x92\x2e\x0e\xbc\x47\xe4\x50\xa0\xf1\xc9\xc4\xff\x60\x82\x9e\xe0\x3a\x76\xe0\x38\x31\x9f\x8f\xbb\x9a\xd1\xee\x99\x32\xf8\xbe\xfa\x29\x11\x30\xfb\x1c\x26\xf6\x42\x37\x97\xfe\x1c\x31\xc0\x9c\x47\xb5\x80\xfa\x6f\x17\x47\x3e\x20\x9a\x05\x44\x27\xa1\x15\x60\x33\x40\x18\xd9\x98\xe8\x18\x44\x02\x23\xb3\xfe\x0c\xa7\xa8\xe6\x19\x12\xcd\x07\xd6\x27\xac\x01\x23\x0f\x88\x8e\x60\x24\x76\x9e\xc4\x75\x0e\x46\x36\x06\x1e\x3f\xc5\x39\xa2\xf6\x7b\x13\xcf\xc0\xf2\xce\xc1\xbe\x4f\x34\x4d\x89\x0e\xc1\x3f\x70\xce\x88\x0e\x99\x1d\xc0\x25\xe4\x44\xc7\x94\xe8\xb8\x6f\x63\x8a\x22\xa2\xa3\xb0\xf6\x99\x10\xcd\x62\xa2\xf3\x90\xe8\x34\x26\x9a\x81\xf0\xc3\xe3\xe2\x07\x9b\x71\x6e\x6b\x95\xf7\x89\x1e\xc4\x6f\x14\xbf\x29\xfb\x7b\x4a\xdf\x00\x9e\x10\xbe\xfd\x67\xf4\x5c\xd9\x1b\xc4\x9f\x13\xfd\x7e\x94\xff\xbe\xe4\x9b\xf0\x6a\xc1\xf7\x83\xe0\xed\x8a\x8f\xc6\xd1\x28\x7c\x3f\xc5\x1f\xfd\xa9\xf1\x5f\x7b\xf3\x81\x60\x77\xc2\x18\x9f\xf7\xf6\x1b\xc3\x33\x25\x3a\xcf\x89\x8e\x86\x44\xf7\xb3\x16\x01\xb4\x65\xe1\x9f\x6a\xa0\x0d\xf3\x49\x06\xed\xbf\x08\x8f\x29\xa1\x0d\xf7\x7c\x31\x9c\x11\xf1\xbb\xea\xe1\x54\x9c\xcd\x3b\x70\xf4\x36\x45\xfc\x1d\x00\x00\xff\xff\x35\x36\x81\x4a\x00\x10\x00\x00")
+
+func bindataGoBytes() ([]byte, error) {
+	return bindataRead(
+		_bindataGo,
+		"bindata.go",
+	)
+}
+
+func bindataGo() (*asset, error) {
+	bytes, err := bindataGoBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "bindata.go", size: 12288, mode: os.FileMode(420), modTime: time.Unix(1649440598, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+// Asset loads and returns the asset for the given name.
+// It returns an error if the asset could not be found or
+// could not be loaded.
+func Asset(name string) ([]byte, error) {
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	if f, ok := _bindata[cannonicalName]; ok {
+		a, err := f()
+		if err != nil {
+			return nil, fmt.Errorf("Asset %s can't read by error: %v", name, err)
+		}
+		return a.bytes, nil
+	}
+	return nil, fmt.Errorf("Asset %s not found", name)
+}
+
+// MustAsset is like Asset but panics when Asset would return an error.
+// It simplifies safe initialization of global variables.
+func MustAsset(name string) []byte {
+	a, err := Asset(name)
+	if err != nil {
+		panic("asset: Asset(" + name + "): " + err.Error())
+	}
+
+	return a
+}
+
+// AssetInfo loads and returns the asset info for the given name.
+// It returns an error if the asset could not be found or
+// could not be loaded.
+func AssetInfo(name string) (os.FileInfo, error) {
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	if f, ok := _bindata[cannonicalName]; ok {
+		a, err := f()
+		if err != nil {
+			return nil, fmt.Errorf("AssetInfo %s can't read by error: %v", name, err)
+		}
+		return a.info, nil
+	}
+	return nil, fmt.Errorf("AssetInfo %s not found", name)
+}
+
+// AssetNames returns the names of the assets.
+func AssetNames() []string {
+	names := make([]string, 0, len(_bindata))
+	for name := range _bindata {
+		names = append(names, name)
+	}
+	return names
+}
+
+// _bindata is a table, holding each asset generator, mapped to its name.
+var _bindata = map[string]func() (*asset, error){
+	"000001_create_users_table.down.sql":       _000001_create_users_tableDownSql,
+	"000001_create_users_table.up.sql":         _000001_create_users_tableUpSql,
+	"000002_create_orders_table.down.sql":      _000002_create_orders_tableDownSql,
+	"000002_create_orders_table.up.sql":        _000002_create_orders_tableUpSql,
+	"000003_create_withdrawals_table.down.sql": _000003_create_withdrawals_tableDownSql,
+	"000003_create_withdrawals_table.up.sql":   _000003_create_withdrawals_tableUpSql,
+	"bindata.go":                               bindataGo,
+}
+
+// AssetDir returns the file names below a certain
+// directory embedded in the file by go-bindata.
+// For example if you run go-bindata on data/... and data contains the
+// following hierarchy:
+//     data/
+//       foo.txt
+//       img/
+//         a.png
+//         b.png
+// then AssetDir("data") would return []string{"foo.txt", "img"}
+// AssetDir("data/img") would return []string{"a.png", "b.png"}
+// AssetDir("foo.txt") and AssetDir("notexist") would return an error
+// AssetDir("") will return []string{"data"}.
+func AssetDir(name string) ([]string, error) {
+	node := _bintree
+	if len(name) != 0 {
+		cannonicalName := strings.Replace(name, "\\", "/", -1)
+		pathList := strings.Split(cannonicalName, "/")
+		for _, p := range pathList {
+			node = node.Children[p]
+			if node == nil {
+				return nil, fmt.Errorf("Asset %s not found", name)
+			}
+		}
+	}
+	if node.Func != nil {
+		return nil, fmt.Errorf("Asset %s not found", name)
+	}
+	rv := make([]string, 0, len(node.Children))
+	for childName := range node.Children {
+		rv = append(rv, childName)
+	}
+	return rv, nil
+}
+
+type bintree struct {
+	Func     func() (*asset, error)
+	Children map[string]*bintree
+}
+
+var _bintree = &bintree{nil, map[string]*bintree{
+	"000001_create_users_table.down.sql":       &bintree{_000001_create_users_tableDownSql, map[string]*bintree{}},
+	"000001_create_users_table.up.sql":         &bintree{_000001_create_users_tableUpSql, map[string]*bintree{}},
+	"000002_create_orders_table.down.sql":      &bintree{_000002_create_orders_tableDownSql, map[string]*bintree{}},
+	"000002_create_orders_table.up.sql":        &bintree{_000002_create_orders_tableUpSql, map[string]*bintree{}},
+	"000003_create_withdrawals_table.down.sql": &bintree{_000003_create_withdrawals_tableDownSql, map[string]*bintree{}},
+	"000003_create_withdrawals_table.up.sql":   &bintree{_000003_create_withdrawals_tableUpSql, map[string]*bintree{}},
+	"bindata.go":                               &bintree{bindataGo, map[string]*bintree{}},
+}}
+
+// RestoreAsset restores an asset under the given directory
+func RestoreAsset(dir, name string) error {
+	data, err := Asset(name)
+	if err != nil {
+		return err
+	}
+	info, err := AssetInfo(name)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	if err != nil {
+		return err
+	}
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RestoreAssets restores an asset under the given directory recursively
+func RestoreAssets(dir, name string) error {
+	children, err := AssetDir(name)
+	// File
+	if err != nil {
+		return RestoreAsset(dir, name)
+	}
+	// Dir
+	for _, child := range children {
+		err = RestoreAssets(dir, filepath.Join(name, child))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func _filePath(dir, name string) string {
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+}

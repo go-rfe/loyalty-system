@@ -1,0 +1,1 @@
+# Simple gophermart server for learning purposes

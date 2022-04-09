@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/caarlos0/env/v6"
-
 	"github.com/go-rfe/logging"
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/cmd"
@@ -16,15 +15,16 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to parse command line arguments")
 	}
 
-	logging.Level(cmd.LogLevel)
-
 	LoyaltyServerConfig := server.Config{
 		ServerAddress: cmd.ServerAddress,
 		LogLevel:      cmd.LogLevel,
+		DatabaseURI:   cmd.DatabaseURI,
 	}
 	if err := env.Parse(&LoyaltyServerConfig); err != nil {
 		log.Fatal().Err(err).Msg("Failed to parse environment variables")
 	}
+
+	logging.Level(LoyaltyServerConfig.LogLevel)
 
 	loyaltyServer := server.LoyaltyServer{Cfg: &LoyaltyServerConfig}
 

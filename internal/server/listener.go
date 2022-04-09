@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-rfe/logging"
 	"github.com/go-rfe/logging/log"
+
+	"github.com/go-rfe/loyalty-system/internal/server/handlers"
 )
 
 func (s *LoyaltyServer) startListener() {
@@ -21,8 +23,8 @@ func (s *LoyaltyServer) startListener() {
 	compressor := middleware.NewCompressor(gzip.BestCompression)
 	mux.Use(compressor.Handler)
 
-	RegisterPublicHandlers(mux, s.Cfg.UserStore, s.AuthToken())
-	RegisterPrivateHandlers(mux, s.Cfg.UserStore, s.AuthToken())
+	handlers.RegisterUserHandlers(mux, s.Cfg.UserStore, s.AuthToken())
+	handlers.RegisterOrdersHandlers(mux, s.Cfg.OrdersStore, s.AuthToken())
 
 	httpServer := &http.Server{
 		Addr:    s.Cfg.ServerAddress,
