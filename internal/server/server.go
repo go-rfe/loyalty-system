@@ -19,7 +19,6 @@ type Config struct {
 	DatabaseURI    string        `env:"DATABASE_URI"`
 	AuthToken      []byte        `env:"AUTH_TOKEN"`
 	AccrualAddress string        `env:"ACCRUAL_SYSTEM_ADDRESS"`
-	AccrualScheme  string        `env:"ACCRUAL_SYSTEM_SCHEME" envDefault:"http"`
 	PollInterval   time.Duration `env:"POLL_INTERVAL" envDefault:"10s"`
 
 	LogLevel string `env:"LOG_LEVEL"`
@@ -51,7 +50,6 @@ func (s *LoyaltyServer) Start(ctx context.Context) {
 
 	pollWorker := PollerWorker{Cfg: PollerConfig{
 		AccrualAddress: s.Cfg.AccrualAddress,
-		AccrualScheme:  s.Cfg.AccrualScheme,
 		PollInterval:   s.Cfg.PollInterval,
 	}}
 

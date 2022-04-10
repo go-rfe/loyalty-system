@@ -26,7 +26,6 @@ var (
 type PollerConfig struct {
 	PollInterval   time.Duration
 	AccrualAddress string
-	AccrualScheme  string
 }
 
 type PollerWorker struct {
@@ -41,7 +40,7 @@ func (pw *PollerWorker) Run(ctx context.Context, ordersStore orders.Store) {
 		Timeout: pollTimeout,
 	}
 
-	serverURL := pw.Cfg.AccrualScheme + "://" + pw.Cfg.AccrualAddress + accrualHTTPpath
+	serverURL := pw.Cfg.AccrualAddress + accrualHTTPpath
 
 	storeContext, storeCancel := context.WithCancel(ctx)
 	defer storeCancel()
