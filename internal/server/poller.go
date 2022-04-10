@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -105,12 +104,6 @@ func getOrder(ctx context.Context, orderGetURL string, client *http.Client) (*or
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Error().Err(err).Msg("couldn't close response body")
-		}
-	}(resp.Body)
 
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -128,6 +121,10 @@ func getOrder(ctx context.Context, orderGetURL string, client *http.Client) (*or
 	err = json.NewDecoder(resp.Body).Decode(&accrualOrder)
 	if err != nil {
 		return nil, err
+	}
+	err = resp.Body.Close()
+	if err != nil {
+		log.Error().Err(err).Msg("couldn't close response body")
 	}
 
 	order = orders.Order{
