@@ -11,30 +11,22 @@ services:
       POSTGRES_PASSWORD: dbpass
     ports:
       - "5432:5432"
-  server:
+  statictests:
     build: ./
-    restart: always
-    entrypoint: ["/app/bin/server"]
-    environment:
-      LOG_LEVEL: "DEBUG"
-      DATABASE_URI: "postgres://dbuser:dbpass@postgres:5432/loyalty"
-      RUN_ADDRESS: "0.0.0.0:8080"
-      ACCRUAL_SYSTEM_ADDRESS: "tests:8081"
-    ports:
-      - "8080:8080"
+    entrypoint: "bash -c 'go vet -vettool=/usr/bin/statictest $$(go list ./... | grep -v migrations)'"
   tests:
-    build: ./tests
+    build: ./
     entrypoint:
      - "gophermarttest"
      - "-test.v"
      - "-test.run=^TestGophermart$$"
-     - "-gophermart-binary-path=bin/true"
-     - "-gophermart-host=server"
+     - "-gophermart-binary-path=/app/bin/server"
+     - "-gophermart-host=localhost"
      - "-gophermart-port=8080"
-     - '-gophermart-database-uri="postgres://dbuser:dbpass@postgres:5432/loyalty"'
+     - "-gophermart-database-uri=postgres://dbuser:dbpass@postgres:5432/loyalty"
      - "-accrual-binary-path=/usr/bin/accrual"
-     - "-accrual-host=0.0.0.0"
+     - "-accrual-host=localhost"
      - "-accrual-port=8081"
-     - '-accrual-database-uri="postgres://dbuser:dbpass@postgres:5432/loyalty"'
+     - "-accrual-database-uri=postgres://dbuser:dbpass@postgres:5432/loyalty"
     environment:
-      LOG_LEVEL: "DEBUG"
+      LOG_LEVEL: "ERROR"

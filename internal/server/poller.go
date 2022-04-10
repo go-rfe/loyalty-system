@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -26,7 +25,6 @@ var (
 type PollerConfig struct {
 	PollInterval   time.Duration
 	AccrualAddress string
-	AccrualScheme  string
 }
 
 type PollerWorker struct {
@@ -41,7 +39,7 @@ func (pw *PollerWorker) Run(ctx context.Context, ordersStore orders.Store) {
 		Timeout: pollTimeout,
 	}
 
-	serverURL := pw.Cfg.AccrualScheme + "://" + pw.Cfg.AccrualAddress + accrualHTTPpath
+	serverURL := pw.Cfg.AccrualAddress + accrualHTTPpath
 
 	storeContext, storeCancel := context.WithCancel(ctx)
 	defer storeCancel()
@@ -106,12 +104,6 @@ func getOrder(ctx context.Context, orderGetURL string, client *http.Client) (*or
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Error().Err(err).Msg("couldn't close response body")
-		}
-	}(resp.Body)
 
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -129,6 +121,10 @@ func getOrder(ctx context.Context, orderGetURL string, client *http.Client) (*or
 	err = json.NewDecoder(resp.Body).Decode(&accrualOrder)
 	if err != nil {
 		return nil, err
+	}
+	err = resp.Body.Close()
+	if err != nil {
+		log.Error().Err(err).Msg("couldn't close response body")
 	}
 
 	order = orders.Order{
