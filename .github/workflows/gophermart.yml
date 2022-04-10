@@ -57,7 +57,7 @@ jobs:
             -gophermart-host=localhost \
             -gophermart-port=8080 \
             -gophermart-database-uri="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable" \
-            -accrual-binary-path=./accrual \
+            -accrual-binary-path=$GITHUB_WORKSPACE/accrual \
             -accrual-host=localhost \
             -accrual-port=$(random unused-port) \
             -accrual-database-uri="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable"
