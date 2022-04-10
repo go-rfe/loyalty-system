@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-rfe/logging/log"
@@ -14,11 +15,14 @@ import (
 )
 
 type Config struct {
-	ServerAddress  string `env:"RUN_ADDRESS"`
-	DatabaseURI    string `env:"DATABASE_URI"`
-	AuthToken      []byte `env:"AUTH_TOKEN"`
-	AccrualAddress string `env:"ACCRUAL_SYSTEM_ADDRESS"`
-	LogLevel       string `env:"LOG_LEVEL"`
+	ServerAddress  string        `env:"RUN_ADDRESS"`
+	DatabaseURI    string        `env:"DATABASE_URI"`
+	AuthToken      []byte        `env:"AUTH_TOKEN"`
+	AccrualAddress string        `env:"ACCRUAL_SYSTEM_ADDRESS"`
+	AccrualScheme  string        `env:"ACCRUAL_SYSTEM_SCHEME" envDefault:"http"`
+	PollInterval   time.Duration `env:"POLL_INTERVAL" envDefault:"10s"`
+
+	LogLevel string `env:"LOG_LEVEL"`
 
 	UserStore   users.Store
 	OrdersStore orders.Store
@@ -45,17 +49,27 @@ func (s *LoyaltyServer) Start(ctx context.Context) {
 	closeUsersStore := initUsersStore(s.Cfg)
 	closeOrdersStore := initOrdersStore(s.Cfg)
 
+	pollWorker := PollerWorker{Cfg: PollerConfig{
+		AccrualAddress: s.Cfg.AccrualAddress,
+		AccrualScheme:  s.Cfg.AccrualScheme,
+		PollInterval:   s.Cfg.PollInterval,
+	}}
+
+	pollContext, cancelPoller := context.WithCancel(ctx)
+	go pollWorker.Run(pollContext, s.Cfg.OrdersStore)
+
 	go s.startListener()
 	log.Info().Msgf("Start listener on %s", s.Cfg.ServerAddress)
 
 	log.Info().Msgf("%s signal received, graceful shutdown the server", <-getSignalChannel())
+	cancelPoller()
 	s.stopListener()
 
 	if err := closeUsersStore(); err != nil {
-		log.Error().Err(err).Msg("Some error occurred while store close")
+		log.Error().Err(err).Msg("Some error occurred while users store close")
 	}
 	if err := closeOrdersStore(); err != nil {
-		log.Error().Err(err).Msg("Some error occurred while store close")
+		log.Error().Err(err).Msg("Some error occurred while orders store close")
 	}
 
 	serverCancel()

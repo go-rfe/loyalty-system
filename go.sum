@@ -348,6 +348,8 @@ github.com/gabriel-vasile/mimetype v1.4.0/go.mod h1:fA8fi6KUiG7MgQQ+mEWotXoEOvmx
 github.com/garyburd/redigo v0.0.0-20150301180006-535138d7bcd7/go.mod h1:NR3MbYisc3/PwhQ00EMzDiPmrwpPxAn5GI05/YaO1SY=
 github.com/ghodss/yaml v0.0.0-20150909031657-73d445a93680/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
+github.com/go-bindata/go-bindata v3.1.2+incompatible h1:5vjJMVhowQdPzjE1LdxyFF7YFTXg5IgGVW4gBr5IbvE=
+github.com/go-bindata/go-bindata v3.1.2+incompatible/go.mod h1:xK8Dsgwmeed+BBsSy2XTopBn/8uK2HWuGSnA11C3Joo=
 github.com/go-chi/chi/v5 v5.0.0/go.mod h1:BBug9lr0cqtdAhsu6R4AAdvufI0/XBzAQSsUqJpoZOs=
 github.com/go-chi/chi/v5 v5.0.4 h1:5e494iHzsYBiyXQAHHuI4tyJS9M3V84OuX3ufIIGHFo=
 github.com/go-chi/chi/v5 v5.0.4/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
@@ -379,8 +381,8 @@ github.com/go-openapi/jsonreference v0.19.3/go.mod h1:rjx6GuL8TTa9VaixXglHmQmIL9
 github.com/go-openapi/spec v0.19.3/go.mod h1:FpwSN1ksY1eteniUU7X0N/BgJ7a4WvBFVA8Lj9mJglo=
 github.com/go-openapi/swag v0.19.2/go.mod h1:POnQmlKehdgb5mhVOsnJFsivZCEZ/vjK9gh66Z9tfKk=
 github.com/go-openapi/swag v0.19.5/go.mod h1:POnQmlKehdgb5mhVOsnJFsivZCEZ/vjK9gh66Z9tfKk=
-github.com/go-rfe/logging v0.0.0-20220407144644-00b33868d10a h1:oDuMmgmXpaT9pL0sZdnyliKH18m16wbZvwVraVhcNBo=
-github.com/go-rfe/logging v0.0.0-20220407144644-00b33868d10a/go.mod h1:bOvBIzVjj4Wq4oiP+9kFc8MUIkEhF5166ESMzUF72IU=
+github.com/go-rfe/logging v0.1.0 h1:HyWzMr9SfnOaOtiXLuQeQ5d2rPE5vP3q1HebI3AauMA=
+github.com/go-rfe/logging v0.1.0/go.mod h1:bOvBIzVjj4Wq4oiP+9kFc8MUIkEhF5166ESMzUF72IU=
 github.com/go-rfe/utils v0.1.0 h1:SVr54Z6dl25XF/mCRjjLbpaSsz7jmAWw9N7c7ruy4/c=
 github.com/go-rfe/utils v0.1.0/go.mod h1:vb9KUWyAoUg96//t9qM0xeDDvRGCicK9Zppy/KZytU8=
 github.com/go-sql-driver/mysql v1.4.0/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=

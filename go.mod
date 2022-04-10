@@ -6,7 +6,7 @@ require (
 	github.com/caarlos0/env/v6 v6.9.1
 	github.com/go-chi/chi/v5 v5.0.4
 	github.com/go-chi/jwtauth/v5 v5.0.2
-	github.com/go-rfe/logging v0.0.0-20220407144644-00b33868d10a
+	github.com/go-rfe/logging v0.1.0
 	github.com/go-rfe/utils v0.1.0
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/jackc/pgx/v4 v4.15.0
@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.0-20210816181553-5444fa50b93d // indirect
+	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/go-chi/httplog v0.2.4 // indirect
 	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect

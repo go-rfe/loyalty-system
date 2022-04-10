@@ -23,8 +23,8 @@ func (s *LoyaltyServer) startListener() {
 	compressor := middleware.NewCompressor(gzip.BestCompression)
 	mux.Use(compressor.Handler)
 
-	handlers.RegisterUserHandlers(mux, s.Cfg.UserStore, s.AuthToken())
-	handlers.RegisterOrdersHandlers(mux, s.Cfg.OrdersStore, s.AuthToken())
+	handlers.RegisterPublicHandlers(mux, s.Cfg.UserStore, s.AuthToken())
+	handlers.RegisterPrivateHandlers(mux, s.Cfg.OrdersStore, s.AuthToken())
 
 	httpServer := &http.Server{
 		Addr:    s.Cfg.ServerAddress,

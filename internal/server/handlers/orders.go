@@ -6,19 +6,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
-)
-
-const (
-	orderNumberBase    = 10
-	orderNumberBitSize = 64
 )
 
 func OrdersHandler(ordersStore orders.Store) func(r chi.Router) {
@@ -44,22 +37,7 @@ func createOrder(ordersStore orders.Store) func(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		if _, err = strconv.ParseInt(string(orderNumber), orderNumberBase, orderNumberBitSize); err != nil {
-			log.Error().Err(err).Msg("Failed to parse order number")
-			http.Error(
-				w,
-				fmt.Sprintf("Bad order number: %s", orderNumber),
-				http.StatusUnprocessableEntity,
-			)
-
-			return
-		}
-
-		order := orders.Order{
-			Number:     string(orderNumber),
-			UploadedAt: time.Now(),
-		}
-		if err := order.Validate(); err != nil {
+		if err := orders.Validate(string(orderNumber)); err != nil {
 			http.Error(
 				w,
 				fmt.Sprintf("Bad order number: %s (%q)", orderNumber, err),
@@ -81,7 +59,7 @@ func createOrder(ordersStore orders.Store) func(w http.ResponseWriter, r *http.R
 		}
 
 		login := fmt.Sprintf("%v", claims["sub"])
-		err = ordersStore.CreateOrder(requestContext, login, &order)
+		err = ordersStore.CreateOrder(requestContext, login, string(orderNumber))
 		if err != nil && errors.Is(err, orders.ErrOtherOrderExists) {
 			http.Error(
 				w,

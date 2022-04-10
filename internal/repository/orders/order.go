@@ -17,25 +17,42 @@ const (
 )
 
 var (
-	ErrOrderExists        = errors.New("order already exists")
-	ErrOtherOrderExists   = errors.New("other user order already exists")
-	ErrInvalidOrderNumber = errors.New("order number is invalid")
+	ErrOrderExists         = errors.New("order already exists")
+	ErrOtherOrderExists    = errors.New("other user order already exists")
+	ErrInvalidOrderNumber  = errors.New("order number is invalid")
+	ErrInsufficientBalance = errors.New("insufficient balance")
 )
 
 type Store interface {
-	CreateOrder(ctx context.Context, login string, order *Order) error
+	CreateOrder(ctx context.Context, login string, order string) error
+	UpdateOrder(ctx context.Context, order *Order) error
 	GetOrders(ctx context.Context, login string) ([]Order, error)
+	GetUnprocessedOrders(ctx context.Context) ([]Order, error)
+	GetBalance(ctx context.Context, login string) (*Balance, error)
+	Withdraw(ctx context.Context, login string, withdraw *Withdraw) error
+	GetWithdrawals(ctx context.Context, login string) ([]Withdraw, error)
 }
 
 type Order struct {
 	Number     string    `json:"number"`
 	Status     string    `json:"status"`
-	Accrual    float32   `json:"accrual"`
+	Accrual    float32   `json:"accrual,omitempty"`
 	UploadedAt time.Time `json:"uploaded_at"`
 }
 
-func (o *Order) Validate() error {
-	numberInt, err := strconv.ParseInt(o.Number, orderNumberBase, orderNumberBitSize)
+type Balance struct {
+	Current   float32 `json:"current"`
+	Withdrawn float32 `json:"withdrawn"`
+}
+
+type Withdraw struct {
+	Order       string    `json:"order"`
+	Sum         float32   `json:"sum"`
+	ProcessedAt time.Time `json:"processed_at"`
+}
+
+func Validate(number string) error {
+	numberInt, err := strconv.ParseInt(number, orderNumberBase, orderNumberBitSize)
 	if err != nil {
 		return err
 	}
@@ -47,11 +64,11 @@ func (o *Order) Validate() error {
 	return nil
 }
 
-func Encode(orders *[]Order) (*bytes.Buffer, error) {
+func Encode(data interface{}) (*bytes.Buffer, error) {
 	var buf bytes.Buffer
 	jsonEncoder := json.NewEncoder(&buf)
 
-	if err := jsonEncoder.Encode(orders); err != nil {
+	if err := jsonEncoder.Encode(data); err != nil {
 		return nil, err
 	}
 
