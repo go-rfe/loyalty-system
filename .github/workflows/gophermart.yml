@@ -53,7 +53,7 @@ jobs:
         run: |
           gophermarttest \
             -test.v -test.run=^TestGophermart$ \
-            -gophermart-binary-path=./server1 \
+            -gophermart-binary-path=$GITHUB_WORKSPACE/server \
             -gophermart-host=localhost \
             -gophermart-port=8080 \
             -gophermart-database-uri="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable" \
