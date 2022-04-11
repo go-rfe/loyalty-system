@@ -59,29 +59,24 @@ func createOrder(ordersStore orders.Store) func(w http.ResponseWriter, r *http.R
 		}
 
 		login := fmt.Sprintf("%v", claims["sub"])
-		err = ordersStore.CreateOrder(requestContext, login, string(orderNumber))
-		if err != nil && errors.Is(err, orders.ErrOtherOrderExists) {
+		switch err := ordersStore.CreateOrder(requestContext, login, string(orderNumber)); {
+		case errors.Is(err, orders.ErrOtherOrderExists):
 			http.Error(
 				w,
 				err.Error(),
 				http.StatusConflict,
 			)
-
-			return
-		}
-		if err != nil && !errors.Is(err, orders.ErrOrderExists) {
+		case errors.Is(err, orders.ErrOrderExists):
+			w.WriteHeader(http.StatusOK)
+		case err != nil:
 			http.Error(
 				w,
 				fmt.Sprintf("couldn't create order: %q", err),
 				http.StatusInternalServerError,
 			)
-
-			return
+		default:
+			w.WriteHeader(http.StatusAccepted)
 		}
-		if errors.Is(err, orders.ErrOrderExists) {
-			w.WriteHeader(http.StatusOK)
-		}
-		w.WriteHeader(http.StatusAccepted)
 	}
 }
 

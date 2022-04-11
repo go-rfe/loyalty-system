@@ -59,6 +59,7 @@ func (db *DBStore) CreateOrder(ctx context.Context, login string, order string) 
 
 func (db *DBStore) UpdateOrder(ctx context.Context, order *Order) error {
 	withoutAccrualStatuses := map[string]struct{}{
+		"INVALID":    {},
 		"REGISTERED": {},
 		"PROCESSING": {},
 	}
