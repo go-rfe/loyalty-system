@@ -16,6 +16,7 @@ import (
 func BalanceHandler(ordersStore orders.Store) func(r chi.Router) {
 	return func(r chi.Router) {
 		r.Get("/", getBalance(ordersStore))
+		r.Get("/withdrawals", getWithdrawals(ordersStore))
 		r.Post("/withdraw", withdraw(ordersStore))
 	}
 }
@@ -61,6 +62,53 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(encodedBalance.Bytes())
+		if err != nil {
+			log.Error().Err(err).Msg("Cannot send request")
+		}
+	}
+}
+
+func getWithdrawals(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
+		defer requestCancel()
+
+		_, claims, err := jwtauth.FromContext(r.Context())
+		if err != nil {
+			http.Error(
+				w,
+				fmt.Sprintf("couldn't get user from token: %q", err),
+				http.StatusInternalServerError,
+			)
+
+			return
+		}
+
+		login := fmt.Sprintf("%v", claims["sub"])
+
+		withdrawals, err := ordersStore.GetWithdrawals(requestContext, login)
+		if err != nil {
+			http.Error(
+				w,
+				fmt.Sprintf("couldn't get balance for %s: %q", login, err),
+				http.StatusInternalServerError,
+			)
+
+			return
+		}
+		encodedWithdrawals, err := orders.Encode(withdrawals)
+		if err != nil {
+			http.Error(
+				w,
+				fmt.Sprintf("couldn't encode orders: %q", err),
+				http.StatusInternalServerError,
+			)
+
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_, err = w.Write(encodedWithdrawals.Bytes())
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}
