@@ -1,0 +1,21 @@
+---
+name: go unit tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  unittests:
+    runs-on: ubuntu-latest
+    container: golang:1.17
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run unit tests
+        run: |
+          make test

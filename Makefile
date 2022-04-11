@@ -26,7 +26,7 @@ clean:
 update:
 	$(MAKE) go-update
 
-test: go-test go-statictest go-vet
+test: go-test go-vet
 
 compile: go-clean go-get-server build-server
 
@@ -56,15 +56,6 @@ go-tidy:
 go-test:
 	@echo "  >  Test project..."
 	@go test ./...
-
-go-container:
-	@echo "  >  Building docker image..."
-	@docker build -q -t go-loyalty-server .
-	@docker run --name go-loyalty-server go-loyalty-server
-
-go-statictest: go-container
-	@echo " > Static test project..."
-	@docker logs go-loyalty-server
 
 go-vet:
 	@echo "  >  Vet project..."

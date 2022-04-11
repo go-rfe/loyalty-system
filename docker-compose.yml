@@ -11,10 +11,21 @@ services:
       POSTGRES_PASSWORD: dbpass
     ports:
       - "5432:5432"
+  server:
+    build: ./
+    restart: on-failure
+    ports:
+      - "8080:8008"
+    environment:
+      RUN_ADDRESS: "0.0.0.0:8080"
+      DATABASE_URI: "postgres://dbuser:dbpass@postgres:5432/loyalty"
+      LOG_LEVEL: "DEBUG"
   statictests:
+    profiles: ["tests"]
     build: ./
     entrypoint: "bash -c 'go vet -vettool=/usr/bin/statictest $$(go list ./... | grep -v migrations)'"
   tests:
+    profiles: ["tests"]
     build: ./
     entrypoint:
      - "gophermarttest"
