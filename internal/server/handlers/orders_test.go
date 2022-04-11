@@ -142,6 +142,7 @@ func testOrdersRequest(t *testing.T, ts *httptest.Server, testData testOrder) {
 
 	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
+	defer resp.Body.Close()
 
 	assert.Equal(t, testData.want.code, resp.StatusCode)
 }
