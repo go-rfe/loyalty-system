@@ -17,7 +17,7 @@ import (
 type Config struct {
 	ServerAddress  string        `env:"RUN_ADDRESS"`
 	DatabaseURI    string        `env:"DATABASE_URI"`
-	AuthToken      []byte        `env:"AUTH_TOKEN"`
+	Secret         []byte        `env:"SECRET"`
 	AccrualAddress string        `env:"ACCRUAL_SYSTEM_ADDRESS"`
 	PollInterval   time.Duration `env:"POLL_INTERVAL" envDefault:"10s"`
 
@@ -39,14 +39,13 @@ func (s *LoyaltyServer) Start(ctx context.Context) {
 	serverContext, serverCancel := context.WithCancel(ctx)
 	s.context = serverContext
 
-	if len(s.Cfg.AuthToken) == 0 {
-		s.Cfg.AuthToken = getRandomToken()
+	if len(s.Cfg.Secret) == 0 {
+		s.Cfg.Secret = getRandomToken()
 	}
 
-	s.Cfg.jwtToken = jwtauth.New("HS256", s.Cfg.AuthToken, s.Cfg.AuthToken)
+	s.Cfg.jwtToken = jwtauth.New("HS256", s.Cfg.Secret, s.Cfg.Secret)
 
-	closeUsersStore := initUsersStore(s.Cfg)
-	closeOrdersStore := initOrdersStore(s.Cfg)
+	closeUsersStore, closeOrdersStore := initStore(s.Cfg)
 
 	pollWorker := PollerWorker{Cfg: PollerConfig{
 		AccrualAddress: s.Cfg.AccrualAddress,

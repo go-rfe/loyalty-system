@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
-
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
 )
@@ -47,7 +46,7 @@ func createOrder(ordersStore orders.Store) func(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		_, claims, err := jwtauth.FromContext(r.Context())
+		login, err := getLoginFromRequest(r)
 		if err != nil {
 			http.Error(
 				w,
@@ -58,8 +57,8 @@ func createOrder(ordersStore orders.Store) func(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		login := fmt.Sprintf("%v", claims["sub"])
-		switch err := ordersStore.CreateOrder(requestContext, login, string(orderNumber)); {
+		err = ordersStore.CreateOrder(requestContext, login, string(orderNumber))
+		switch {
 		case errors.Is(err, orders.ErrOtherOrderExists):
 			http.Error(
 				w,
@@ -85,7 +84,7 @@ func getOrders(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Req
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		_, claims, err := jwtauth.FromContext(r.Context())
+		login, err := getLoginFromRequest(r)
 		if err != nil {
 			http.Error(
 				w,
@@ -95,8 +94,6 @@ func getOrders(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Req
 
 			return
 		}
-
-		login := fmt.Sprintf("%v", claims["sub"])
 
 		ordersSlice, err := ordersStore.GetOrders(requestContext, login)
 		if err != nil {
@@ -109,21 +106,24 @@ func getOrders(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		encodedOrders, err := orders.Encode(&ordersSlice)
-		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("couldn't encode orders: %q", err),
-				http.StatusInternalServerError,
-			)
-
-			return
-		}
-
 		w.Header().Set("Content-Type", "application/json")
-		_, err = w.Write(encodedOrders.Bytes())
+		err = orders.Encode(&ordersSlice, w)
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}
 	}
+}
+
+func getLoginFromRequest(r *http.Request) (string, error) {
+	_, claims, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		return "", ErrInvalidToken
+	}
+
+	login, ok := claims["sub"].(string)
+	if !ok {
+		return "", ErrInvalidToken
+	}
+
+	return login, nil
 }

@@ -1,48 +1,35 @@
 package server
 
 import (
+	"database/sql"
+
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
 
 	"github.com/go-rfe/loyalty-system/internal/repository/users"
 )
 
-func initUsersStore(config *Config) func() error {
-	switch {
-	case config.DatabaseURI != "":
-		userStore, err := users.NewDBStore(config.DatabaseURI)
-		if err != nil {
-			log.Fatal().Msgf("Couldn't connect to database: %q", err)
-		}
+const (
+	psqlDriverName = "pgx"
+)
 
-		config.UserStore = userStore
-
-		log.Info().Msg("Using Database storage")
-
-		return func() error {
-			return userStore.Close()
-		}
-	default:
-		log.Info().Msg("Using memory storage")
-		config.UserStore = users.NewInMemoryStore()
-
-		return func() error {
-			return nil
-		}
-	}
-}
-
-func initOrdersStore(config *Config) func() error {
-	ordersStore, err := orders.NewDBStore(config.DatabaseURI)
+func initStore(config *Config) (func() error, func() error) {
+	conn, err := sql.Open(psqlDriverName, config.DatabaseURI)
 	if err != nil {
-		log.Fatal().Msgf("Couldn't connect to database: %q", err)
+		log.Fatal().Err(err).Msg("Couldn't create database connection")
 	}
 
-	config.OrdersStore = ordersStore
+	userStore := users.NewDBStore(conn)
+	config.UserStore = userStore
+	log.Info().Msg("Using Database for user storage")
 
-	log.Info().Msg("Using Database storage")
+	ordersStore := orders.NewDBStore(conn)
+	config.OrdersStore = ordersStore
+	log.Info().Msg("Using Database for orders storage")
 
 	return func() error {
-		return ordersStore.Close()
-	}
+			return userStore.Close()
+		}, func() error {
+			return ordersStore.Close()
+		}
 }

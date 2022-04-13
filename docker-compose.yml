@@ -23,7 +23,7 @@ services:
   statictests:
     profiles: ["tests"]
     build: ./
-    entrypoint: "bash -c 'go vet -vettool=/usr/bin/statictest $$(go list ./... | grep -v migrations)'"
+    entrypoint: "bash -c 'go vet -vettool=/usr/bin/statictest ./...'"
   tests:
     profiles: ["tests"]
     build: ./

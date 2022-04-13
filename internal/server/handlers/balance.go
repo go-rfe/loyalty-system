@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
 )
@@ -26,7 +25,7 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		_, claims, err := jwtauth.FromContext(r.Context())
+		login, err := getLoginFromRequest(r)
 		if err != nil {
 			http.Error(
 				w,
@@ -36,8 +35,6 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 
 			return
 		}
-
-		login := fmt.Sprintf("%v", claims["sub"])
 
 		balance, err := ordersStore.GetBalance(requestContext, login)
 		if err != nil {
@@ -49,19 +46,9 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 
 			return
 		}
-		encodedBalance, err := orders.Encode(balance)
-		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("couldn't encode orders: %q", err),
-				http.StatusInternalServerError,
-			)
-
-			return
-		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_, err = w.Write(encodedBalance.Bytes())
+		err = orders.Encode(balance, w)
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}
@@ -73,7 +60,7 @@ func getWithdrawals(ordersStore orders.Store) func(w http.ResponseWriter, r *htt
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		_, claims, err := jwtauth.FromContext(r.Context())
+		login, err := getLoginFromRequest(r)
 		if err != nil {
 			http.Error(
 				w,
@@ -83,8 +70,6 @@ func getWithdrawals(ordersStore orders.Store) func(w http.ResponseWriter, r *htt
 
 			return
 		}
-
-		login := fmt.Sprintf("%v", claims["sub"])
 
 		withdrawals, err := ordersStore.GetWithdrawals(requestContext, login)
 		if err != nil {
@@ -96,19 +81,9 @@ func getWithdrawals(ordersStore orders.Store) func(w http.ResponseWriter, r *htt
 
 			return
 		}
-		encodedWithdrawals, err := orders.Encode(withdrawals)
-		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("couldn't encode orders: %q", err),
-				http.StatusInternalServerError,
-			)
-
-			return
-		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_, err = w.Write(encodedWithdrawals.Bytes())
+		err = orders.Encode(withdrawals, w)
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}
@@ -120,7 +95,7 @@ func withdraw(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Requ
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		_, claims, err := jwtauth.FromContext(r.Context())
+		login, err := getLoginFromRequest(r)
 		if err != nil {
 			http.Error(
 				w,
@@ -130,8 +105,6 @@ func withdraw(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Requ
 
 			return
 		}
-
-		login := fmt.Sprintf("%v", claims["sub"])
 
 		var withdraw orders.Withdraw
 		err = json.NewDecoder(r.Body).Decode(&withdraw)

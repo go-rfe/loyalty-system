@@ -26,6 +26,10 @@ clean:
 update:
 	$(MAKE) go-update
 
+## migrate: Migrate DB
+migrate:
+	$(MAKE) go-migrate
+
 test: go-test go-vet
 
 compile: go-clean go-get-server build-server
@@ -63,5 +67,4 @@ go-vet:
 
 go-migrate:
 	@echo "  >  Update migrations..."
-	@go get -u github.com/go-bindata/go-bindata/...
-	@cd internal/db/migrations; go-bindata -pkg migrations .
+	@migrate -source file://db/migrations -database 'postgres://dbuser:dbpass@localhost:5432/loyalty?sslmode=disable' up

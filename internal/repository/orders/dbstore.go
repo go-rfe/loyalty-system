@@ -6,31 +6,21 @@ import (
 	"errors"
 
 	_ "github.com/jackc/pgx/v4/stdlib" // init postgresql driver
+	"github.com/shopspring/decimal"
 
 	"github.com/go-rfe/logging/log"
-)
-
-const (
-	psqlDriverName = "pgx"
 )
 
 type DBStore struct {
 	connection *sql.DB
 }
 
-func NewDBStore(databaseDSN string) (*DBStore, error) {
-	var db DBStore
-
-	conn, err := sql.Open(psqlDriverName, databaseDSN)
-	if err != nil {
-		return nil, err
+func NewDBStore(connection *sql.DB) *DBStore {
+	db := DBStore{
+		connection: connection,
 	}
 
-	db = DBStore{
-		connection: conn,
-	}
-
-	return &db, nil
+	return &db
 }
 
 func (db *DBStore) CreateOrder(ctx context.Context, login string, order string) error {
@@ -207,8 +197,8 @@ func (db *DBStore) GetUnprocessedOrders(ctx context.Context) ([]Order, error) {
 func (db *DBStore) GetBalance(ctx context.Context, login string) (*Balance, error) {
 	var (
 		balance   Balance
-		withdrawn float32
-		accrual   float32
+		withdrawn decimal.Decimal
+		accrual   decimal.Decimal
 	)
 
 	processedOrders, err := db.getProcessedOrders(ctx, login)
@@ -222,12 +212,12 @@ func (db *DBStore) GetBalance(ctx context.Context, login string) (*Balance, erro
 	}
 
 	for _, order := range processedOrders {
-		accrual += order.Accrual
+		accrual = order.Accrual.Add(accrual)
 	}
 
 	for _, withdraw := range withdrawals {
-		withdrawn += withdraw.Sum
-		accrual -= withdraw.Sum
+		withdrawn = withdraw.Sum.Add(withdrawn)
+		accrual = accrual.Sub(withdraw.Sum)
 	}
 
 	balance = Balance{
@@ -261,7 +251,7 @@ func (db *DBStore) Withdraw(ctx context.Context, login string, withdraw *Withdra
 		return err
 	}
 
-	if balance.Current-withdraw.Sum < 0 {
+	if balance.Current.Sub(withdraw.Sum).LessThan(decimal.Zero) {
 		return ErrInsufficientBalance
 	}
 
