@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -12,6 +13,8 @@ import (
 const (
 	requestTimeout = 1 * time.Second
 )
+
+var ErrInvalidToken = errors.New("invalid auth token")
 
 func RegisterPublicHandlers(mux *chi.Mux, userStore users.Store, auth *jwtauth.JWTAuth) {
 	mux.Group(func(r chi.Router) {

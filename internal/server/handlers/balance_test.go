@@ -13,6 +13,7 @@ import (
 	"github.com/go-rfe/loyalty-system/internal/repository/orders/mocks"
 	"github.com/go-rfe/loyalty-system/internal/server/handlers"
 	"github.com/golang/mock/gomock"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -44,8 +45,8 @@ func TestBalanceHandlers(t *testing.T) {
 			},
 			buildStubs: func(store *mocks.MockStore) {
 				store.EXPECT().GetBalance(gomock.Any(), "test").Return(&orders.Balance{
-					Current:   700.8,
-					Withdrawn: 50.4,
+					Current:   decimal.NewFromFloat(700.8),
+					Withdrawn: decimal.NewFromFloat(50.4),
 				}, nil)
 			},
 		},
@@ -62,7 +63,7 @@ func TestBalanceHandlers(t *testing.T) {
 				store.EXPECT().GetWithdrawals(gomock.Any(), "test").Return([]orders.Withdraw{
 					{
 						Order:       "2377225624",
-						Sum:         500,
+						Sum:         decimal.NewFromFloat(500),
 						ProcessedAt: getDate(),
 					},
 				}, nil)

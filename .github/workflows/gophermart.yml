@@ -9,9 +9,12 @@ on:
       - master
 
 jobs:
-  build:
+  gophermarttest:
     runs-on: ubuntu-latest
     container: golang:1.17
+
+    env:
+      DATABASE_URI: "postgresql://postgres:postgres@postgres/praktikum?sslmode=disable"
 
     services:
       postgres:
@@ -48,6 +51,11 @@ jobs:
           (go build -o server)
           (curl -L -o accrual https://github.com/yandex-praktikum/go-musthave-diploma-tpl/raw/master/cmd/accrual/accrual_linux_amd64)
           (chmod +x accrual)
+          (go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)
+
+      - name: Run migrations
+        run: |
+          migrate -source file://db/migrations -database $DATABASE_URI up
 
       - name: Test
         run: |
@@ -56,8 +64,8 @@ jobs:
             -gophermart-binary-path=$GITHUB_WORKSPACE/server \
             -gophermart-host=localhost \
             -gophermart-port=8080 \
-            -gophermart-database-uri="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable" \
+            -gophermart-database-uri=$DATABASE_URI \
             -accrual-binary-path=$GITHUB_WORKSPACE/accrual \
             -accrual-host=localhost \
             -accrual-port=$(random unused-port) \
-            -accrual-database-uri="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable"
+            -accrual-database-uri=$DATABASE_URI

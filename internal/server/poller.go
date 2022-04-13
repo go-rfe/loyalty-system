@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -89,9 +90,9 @@ func getOrder(ctx context.Context, orderGetURL string, client *http.Client) (*or
 	var order orders.Order
 
 	accrualOrder := struct {
-		Number  string  `json:"order"`
-		Status  string  `json:"status"`
-		Accrual float32 `json:"accrual,omitempty"`
+		Number  string          `json:"order"`
+		Status  string          `json:"status"`
+		Accrual decimal.Decimal `json:"accrual,omitempty"`
 	}{}
 
 	log.Debug().Msgf("Update metric: %s", orderGetURL)

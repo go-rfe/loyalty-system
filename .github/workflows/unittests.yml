@@ -1,5 +1,5 @@
 ---
-name: go unit tests
+name: unittests
 
 on:
   workflow_dispatch:

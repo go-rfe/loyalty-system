@@ -1,5 +1,5 @@
 ---
-name: go vet test
+name: statictest
 
 on:
   workflow_dispatch:
@@ -31,4 +31,4 @@ jobs:
 
       - name: Run statictest
         run: |
-          go vet -vettool=$(which statictest) $(go list ./... | grep -v migrations)
+          go vet -vettool=$(which statictest) ./...

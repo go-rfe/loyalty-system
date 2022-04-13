@@ -1,14 +1,15 @@
 package orders
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"strconv"
 	"time"
 
 	"github.com/go-rfe/utils/luhn"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -34,21 +35,21 @@ type Store interface {
 }
 
 type Order struct {
-	Number     string    `json:"number"`
-	Status     string    `json:"status"`
-	Accrual    float32   `json:"accrual,omitempty"`
-	UploadedAt time.Time `json:"uploaded_at"`
+	Number     string          `json:"number"`
+	Status     string          `json:"status"`
+	Accrual    decimal.Decimal `json:"accrual,omitempty"`
+	UploadedAt time.Time       `json:"uploaded_at"`
 }
 
 type Balance struct {
-	Current   float32 `json:"current"`
-	Withdrawn float32 `json:"withdrawn"`
+	Current   decimal.Decimal `json:"current"`
+	Withdrawn decimal.Decimal `json:"withdrawn"`
 }
 
 type Withdraw struct {
-	Order       string    `json:"order"`
-	Sum         float32   `json:"sum"`
-	ProcessedAt time.Time `json:"processed_at"`
+	Order       string          `json:"order"`
+	Sum         decimal.Decimal `json:"sum"`
+	ProcessedAt time.Time       `json:"processed_at"`
 }
 
 func Validate(number string) error {
@@ -64,13 +65,8 @@ func Validate(number string) error {
 	return nil
 }
 
-func Encode(data interface{}) (*bytes.Buffer, error) {
-	var buf bytes.Buffer
-	jsonEncoder := json.NewEncoder(&buf)
-
-	if err := jsonEncoder.Encode(data); err != nil {
-		return nil, err
-	}
-
-	return &buf, nil
+func Encode(data interface{}, w io.Writer) error {
+	jsonEncoder := json.NewEncoder(w)
+	decimal.MarshalJSONWithoutQuotes = true
+	return jsonEncoder.Encode(data)
 }
