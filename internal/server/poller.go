@@ -2,25 +2,15 @@ package server
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/go-rfe/logging/log"
+	"github.com/go-rfe/loyalty-system/internal/accrual"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
-	"github.com/shopspring/decimal"
 )
 
 const (
-	pollTimeout     = 1 * time.Second
-	accrualHTTPpath = "/api/orders/"
-)
-
-var (
-	ErrOrderNotRegistered = errors.New("order doesn't registered")
-	ErrTooManyRequests    = errors.New("wait for a while")
+	pollTimeout = 1 * time.Second
 )
 
 type PollerConfig struct {
@@ -36,26 +26,19 @@ func (pw *PollerWorker) Run(ctx context.Context, ordersStore orders.Store) {
 	pollTicker := time.NewTicker(pw.Cfg.PollInterval)
 	defer pollTicker.Stop()
 
-	client := http.Client{
-		Timeout: pollTimeout,
-	}
-
-	serverURL := pw.Cfg.AccrualAddress + accrualHTTPpath
-
-	storeContext, storeCancel := context.WithCancel(ctx)
-	defer storeCancel()
+	accrualClient := accrual.NewAccrualClient(pw.Cfg.AccrualAddress)
 
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-pollTicker.C:
-			UpdateOrders(storeContext, client, serverURL, ordersStore)
+			UpdateOrders(ctx, accrualClient, ordersStore)
 		}
 	}
 }
 
-func UpdateOrders(ctx context.Context, client http.Client, serverURL string, ordersStore orders.Store) {
+func UpdateOrders(ctx context.Context, accrualClient accrual.Client, ordersStore orders.Store) {
 	skipStatuses := map[string]struct{}{
 		"REGISTERED": {},
 	}
@@ -69,8 +52,7 @@ func UpdateOrders(ctx context.Context, client http.Client, serverURL string, ord
 	}
 
 	for _, order := range ordersSlice {
-		orderGetURL := serverURL + order.Number
-		accrualOrder, err := getOrder(getContext, orderGetURL, &client)
+		accrualOrder, err := accrualClient.GetOrder(getContext, order.Number)
 		if err != nil {
 			log.Error().Err(err).Msg("filed to get order from accrual")
 
@@ -81,58 +63,7 @@ func UpdateOrders(ctx context.Context, client http.Client, serverURL string, ord
 		}
 
 		if err := ordersStore.UpdateOrder(ctx, accrualOrder); err != nil {
-			log.Error().Err(err).Msg("filed to order order")
+			log.Error().Err(err).Msgf("filed to update %s order", accrualOrder.Number)
 		}
 	}
-}
-
-func getOrder(ctx context.Context, orderGetURL string, client *http.Client) (*orders.Order, error) {
-	var order orders.Order
-
-	accrualOrder := struct {
-		Number  string          `json:"order"`
-		Status  string          `json:"status"`
-		Accrual decimal.Decimal `json:"accrual,omitempty"`
-	}{}
-
-	log.Debug().Msgf("Update metric: %s", orderGetURL)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, orderGetURL, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	switch resp.StatusCode {
-	case http.StatusOK:
-		break
-	case http.StatusNoContent:
-		return nil, ErrOrderNotRegistered
-	case http.StatusNotFound:
-		return nil, ErrOrderNotRegistered
-	case http.StatusTooManyRequests:
-		return nil, ErrTooManyRequests
-	default:
-		return nil, fmt.Errorf("server response: %s", resp.Status)
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&accrualOrder)
-	if err != nil {
-		return nil, err
-	}
-	err = resp.Body.Close()
-	if err != nil {
-		log.Error().Err(err).Msg("couldn't close response body")
-	}
-
-	order = orders.Order{
-		Number:  accrualOrder.Number,
-		Status:  accrualOrder.Status,
-		Accrual: accrualOrder.Accrual,
-	}
-
-	return &order, nil
 }

@@ -36,7 +36,7 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		balance, err := ordersStore.GetBalance(requestContext, login)
+		balance, err := orders.GetBalance(requestContext, login, ordersStore)
 		if err != nil {
 			http.Error(
 				w,
