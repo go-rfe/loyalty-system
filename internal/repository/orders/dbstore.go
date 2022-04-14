@@ -77,7 +77,7 @@ func (db *DBStore) UpdateOrder(ctx context.Context, order *Order) error {
 func (db *DBStore) GetOrders(ctx context.Context, login string) ([]Order, error) {
 	orders := make([]Order, 0)
 
-	processedOrders, err := db.getProcessedOrders(ctx, login)
+	processedOrders, err := db.GetProcessedOrders(ctx, login)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (db *DBStore) GetOrders(ctx context.Context, login string) ([]Order, error)
 	return orders, nil
 }
 
-func (db *DBStore) getProcessedOrders(ctx context.Context, login string) ([]Order, error) {
+func (db *DBStore) GetProcessedOrders(ctx context.Context, login string) ([]Order, error) {
 	orders := make([]Order, 0)
 
 	ordersRows, err := db.connection.QueryContext(ctx,
@@ -194,40 +194,6 @@ func (db *DBStore) GetUnprocessedOrders(ctx context.Context) ([]Order, error) {
 	return orders, nil
 }
 
-func (db *DBStore) GetBalance(ctx context.Context, login string) (*Balance, error) {
-	var (
-		balance   Balance
-		withdrawn decimal.Decimal
-		accrual   decimal.Decimal
-	)
-
-	processedOrders, err := db.getProcessedOrders(ctx, login)
-	if err != nil {
-		return nil, err
-	}
-
-	withdrawals, err := db.GetWithdrawals(ctx, login)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, order := range processedOrders {
-		accrual = order.Accrual.Add(accrual)
-	}
-
-	for _, withdraw := range withdrawals {
-		withdrawn = withdraw.Sum.Add(withdrawn)
-		accrual = accrual.Sub(withdraw.Sum)
-	}
-
-	balance = Balance{
-		Current:   accrual,
-		Withdrawn: withdrawn,
-	}
-
-	return &balance, nil
-}
-
 func (db *DBStore) Withdraw(ctx context.Context, login string, withdraw *Withdraw) error {
 	var existingOrder int64
 	var orderLogin string
@@ -246,7 +212,7 @@ func (db *DBStore) Withdraw(ctx context.Context, login string, withdraw *Withdra
 		return ErrOrderExists
 	}
 
-	balance, err := db.GetBalance(ctx, login)
+	balance, err := GetBalance(ctx, login, db)
 	if err != nil {
 		return err
 	}

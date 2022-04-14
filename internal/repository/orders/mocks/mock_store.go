@@ -49,21 +49,6 @@ func (mr *MockStoreMockRecorder) CreateOrder(arg0, arg1, arg2 interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockStore)(nil).CreateOrder), arg0, arg1, arg2)
 }
 
-// GetBalance mocks base method.
-func (m *MockStore) GetBalance(arg0 context.Context, arg1 string) (*orders.Balance, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBalance", arg0, arg1)
-	ret0, _ := ret[0].(*orders.Balance)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetBalance indicates an expected call of GetBalance.
-func (mr *MockStoreMockRecorder) GetBalance(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockStore)(nil).GetBalance), arg0, arg1)
-}
-
 // GetOrders mocks base method.
 func (m *MockStore) GetOrders(arg0 context.Context, arg1 string) ([]orders.Order, error) {
 	m.ctrl.T.Helper()
@@ -77,6 +62,21 @@ func (m *MockStore) GetOrders(arg0 context.Context, arg1 string) ([]orders.Order
 func (mr *MockStoreMockRecorder) GetOrders(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrders", reflect.TypeOf((*MockStore)(nil).GetOrders), arg0, arg1)
+}
+
+// GetProcessedOrders mocks base method.
+func (m *MockStore) GetProcessedOrders(arg0 context.Context, arg1 string) ([]orders.Order, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProcessedOrders", arg0, arg1)
+	ret0, _ := ret[0].([]orders.Order)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProcessedOrders indicates an expected call of GetProcessedOrders.
+func (mr *MockStoreMockRecorder) GetProcessedOrders(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProcessedOrders", reflect.TypeOf((*MockStore)(nil).GetProcessedOrders), arg0, arg1)
 }
 
 // GetUnprocessedOrders mocks base method.

@@ -33,6 +33,22 @@ type testBalance struct {
 }
 
 func TestBalanceHandlers(t *testing.T) {
+	processedOrders := []orders.Order{
+		{
+			Accrual: decimal.NewFromFloat(300.2),
+		},
+		{
+			Accrual: decimal.NewFromFloat(451.0),
+		},
+	}
+	withdrawals := []orders.Withdraw{
+		{
+			Sum: decimal.NewFromFloat(25.1),
+		},
+		{
+			Sum: decimal.NewFromFloat(25.3),
+		},
+	}
 	testOrders := []testBalance{
 		{
 			name:       "Get Balance",
@@ -44,10 +60,8 @@ func TestBalanceHandlers(t *testing.T) {
 				data: "{\"current\":700.8,\"withdrawn\":50.4}\n",
 			},
 			buildStubs: func(store *mocks.MockStore) {
-				store.EXPECT().GetBalance(gomock.Any(), "test").Return(&orders.Balance{
-					Current:   decimal.NewFromFloat(700.8),
-					Withdrawn: decimal.NewFromFloat(50.4),
-				}, nil)
+				store.EXPECT().GetProcessedOrders(gomock.Any(), "test").Return(processedOrders, nil).Times(1)
+				store.EXPECT().GetWithdrawals(gomock.Any(), "test").Return(withdrawals, nil).Times(1)
 			},
 		},
 		{
