@@ -9,7 +9,7 @@ GOBASE=$(shell pwd)
 GOBIN=$(GOBASE)/bin
 GOFILES=$(wildcard *.go)
 
-SERVER_SOURCE=$(GOBASE)/
+SERVER_SOURCE=$(GOBASE)/cmd/loyalty-system
 
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
@@ -67,4 +67,4 @@ go-vet:
 
 go-migrate:
 	@echo "  >  Update migrations..."
-	@migrate -source file://db/migrations -database 'postgres://dbuser:dbpass@localhost:5432/loyalty?sslmode=disable' up
+	@migrate -source file://db/migrations -database ${DATABASE_URI} up
