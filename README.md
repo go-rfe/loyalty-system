@@ -1,1 +1,3 @@
-# Simple gophermart server for learning purposes
+# Simple loyalty system for learning purposes
+
+<img width="1024" alt="loyalty-diagram" src="assets/loyalty-diagram.jpg">
