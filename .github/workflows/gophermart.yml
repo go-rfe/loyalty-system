@@ -61,7 +61,7 @@ jobs:
         run: |
           gophermarttest \
             -test.v -test.run=^TestGophermart$ \
-            -gophermart-binary-path=$GITHUB_WORKSPACE/server \
+            -gophermart-binary-path=$GITHUB_WORKSPACE/bin/server \
             -gophermart-host=localhost \
             -gophermart-port=8080 \
             -gophermart-database-uri=$DATABASE_URI \
