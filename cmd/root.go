@@ -17,7 +17,7 @@ var (
 	ErrInvalidParam = errors.New("invalid param specified")
 	rootCmd         = &cobra.Command{
 		Use:   "server",
-		Short: "Simple gophermart server for learning purposes",
+		Short: "Simple loyalty system for learning purposes",
 		Long:  `Start the server and enjoy a lot of goods!`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			re := regexp.MustCompile(`(DEBUG|INFO|WARNING|ERROR)`)

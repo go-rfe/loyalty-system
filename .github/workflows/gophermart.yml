@@ -48,7 +48,7 @@ jobs:
 
       - name: Build binaries
         run: |
-          (go build -o server)
+          (make build)
           (curl -L -o accrual https://github.com/yandex-praktikum/go-musthave-diploma-tpl/raw/master/cmd/accrual/accrual_linux_amd64)
           (chmod +x accrual)
           (go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)
