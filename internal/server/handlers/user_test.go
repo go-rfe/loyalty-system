@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/go-rfe/loyalty-system/internal/models"
 	"github.com/go-rfe/loyalty-system/internal/repository/users"
 	"github.com/go-rfe/loyalty-system/internal/server/handlers"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ type testUser struct {
 	name   string
 	method string
 	url    string
-	user   *users.User
+	user   *models.User
 	want   want
 }
 
@@ -34,7 +35,7 @@ func TestUserHandlers(t *testing.T) {
 			name:   "OK register user",
 			method: http.MethodPost,
 			url:    "/api/user/register",
-			user: &users.User{
+			user: &models.User{
 				Login:    "test",
 				Password: "test",
 			},
@@ -47,7 +48,7 @@ func TestUserHandlers(t *testing.T) {
 			name:   "BAD register user",
 			method: http.MethodPost,
 			url:    "/api/user/register",
-			user: &users.User{
+			user: &models.User{
 				Login:    "",
 				Password: "",
 			},
@@ -63,7 +64,7 @@ func TestUserHandlers(t *testing.T) {
 			name:   "OK login user",
 			method: http.MethodPost,
 			url:    "/api/user/login",
-			user: &users.User{
+			user: &models.User{
 				Login:    "test",
 				Password: "test",
 			},
@@ -76,7 +77,7 @@ func TestUserHandlers(t *testing.T) {
 			name:   "BAD login user",
 			method: http.MethodPost,
 			url:    "/api/user/login",
-			user: &users.User{
+			user: &models.User{
 				Login:    "",
 				Password: "",
 			},
@@ -89,7 +90,7 @@ func TestUserHandlers(t *testing.T) {
 			name:   "Unauthorized login user",
 			method: http.MethodPost,
 			url:    "/api/user/login",
-			user: &users.User{
+			user: &models.User{
 				Login:    "test",
 				Password: "baspassword",
 			},

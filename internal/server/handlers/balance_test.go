@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/go-rfe/loyalty-system/internal/repository/orders"
+	"github.com/go-rfe/loyalty-system/internal/models"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders/mocks"
 	"github.com/go-rfe/loyalty-system/internal/server/handlers"
 	"github.com/golang/mock/gomock"
@@ -33,15 +33,17 @@ type testBalance struct {
 }
 
 func TestBalanceHandlers(t *testing.T) {
-	processedOrders := []orders.Order{
+	accrualOne := decimal.NewFromFloat(300.2)
+	accrualTwo := decimal.NewFromFloat(451.0)
+	processedOrders := []models.Order{
 		{
-			Accrual: decimal.NewFromFloat(300.2),
+			Accrual: &accrualOne,
 		},
 		{
-			Accrual: decimal.NewFromFloat(451.0),
+			Accrual: &accrualTwo,
 		},
 	}
-	withdrawals := []orders.Withdraw{
+	withdrawals := []models.Withdraw{
 		{
 			Sum: decimal.NewFromFloat(25.1),
 		},
@@ -74,7 +76,7 @@ func TestBalanceHandlers(t *testing.T) {
 				data: "[{\"order\":\"2377225624\",\"sum\":500, \"processed_at\":\"2014-11-12T11:45:26.371Z\"}]\n",
 			},
 			buildStubs: func(store *mocks.MockStore) {
-				store.EXPECT().GetWithdrawals(gomock.Any(), "test").Return([]orders.Withdraw{
+				store.EXPECT().GetWithdrawals(gomock.Any(), "test").Return([]models.Withdraw{
 					{
 						Order:       "2377225624",
 						Sum:         decimal.NewFromFloat(500),

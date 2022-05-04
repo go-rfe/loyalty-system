@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-rfe/logging/log"
+	"github.com/go-rfe/loyalty-system/internal/models"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
 )
 
@@ -36,7 +37,7 @@ func createOrder(ordersStore orders.Store) func(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		if err := orders.Validate(string(orderNumber)); err != nil {
+		if err := models.Validate(string(orderNumber)); err != nil {
 			http.Error(
 				w,
 				fmt.Sprintf("Bad order number: %s (%q)", orderNumber, err),
@@ -97,6 +98,7 @@ func getOrders(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Req
 
 		ordersSlice, err := ordersStore.GetOrders(requestContext, login)
 		if err != nil {
+			log.Error().Err(err).Msgf("couldn't get orders for %s", login)
 			http.Error(
 				w,
 				fmt.Sprintf("couldn't get orders for %s: %q", login, err),
@@ -107,7 +109,7 @@ func getOrders(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Req
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = orders.Encode(&ordersSlice, w)
+		err = models.Encode(&ordersSlice, w)
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/go-rfe/logging/log"
-	"github.com/go-rfe/loyalty-system/internal/repository/orders"
+	"github.com/go-rfe/loyalty-system/internal/models"
 )
 
 const (
@@ -36,8 +36,8 @@ func NewAccrualClient(accrualSystemAddress string) *client {
 	return &ac
 }
 
-func (c *client) GetOrder(ctx context.Context, orderID string) (*orders.Order, error) {
-	order := orders.Order{
+func (c *client) GetOrder(ctx context.Context, orderID string) (*models.Order, error) {
+	order := models.Order{
 		Number: orderID,
 	}
 	accrualOrder := accrual{}

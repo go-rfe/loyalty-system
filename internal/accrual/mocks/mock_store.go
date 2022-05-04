@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	orders "github.com/go-rfe/loyalty-system/internal/repository/orders"
+	models "github.com/go-rfe/loyalty-system/internal/models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +36,10 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // GetOrder mocks base method.
-func (m *MockClient) GetOrder(arg0 context.Context, arg1 string) (*orders.Order, error) {
+func (m *MockClient) GetOrder(arg0 context.Context, arg1 string) (*models.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrder", arg0, arg1)
-	ret0, _ := ret[0].(*orders.Order)
+	ret0, _ := ret[0].(*models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

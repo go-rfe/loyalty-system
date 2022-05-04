@@ -3,24 +3,25 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-rfe/logging/log"
+	"github.com/go-rfe/loyalty-system/internal/models"
 	"github.com/go-rfe/loyalty-system/internal/repository/orders"
+	"github.com/shopspring/decimal"
 )
 
 func BalanceHandler(ordersStore orders.Store) func(r chi.Router) {
 	return func(r chi.Router) {
-		r.Get("/", getBalance(ordersStore))
-		r.Get("/withdrawals", getWithdrawals(ordersStore))
-		r.Post("/withdraw", withdraw(ordersStore))
+		r.Get("/", getBalanceHandler(ordersStore))
+		r.Get("/withdrawals", getWithdrawalsHandler(ordersStore))
+		r.Post("/withdraw", withdrawHandler(ordersStore))
 	}
 }
 
-func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
+func getBalanceHandler(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
@@ -36,7 +37,7 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		balance, err := orders.GetBalance(requestContext, login, ordersStore)
+		balance, err := getBalance(requestContext, login, ordersStore)
 		if err != nil {
 			http.Error(
 				w,
@@ -48,14 +49,14 @@ func getBalance(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Re
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = orders.Encode(balance, w)
+		err = models.Encode(balance, w)
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}
 	}
 }
 
-func getWithdrawals(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
+func getWithdrawalsHandler(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
@@ -83,14 +84,14 @@ func getWithdrawals(ordersStore orders.Store) func(w http.ResponseWriter, r *htt
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = orders.Encode(withdrawals, w)
+		err = models.Encode(withdrawals, w)
 		if err != nil {
 			log.Error().Err(err).Msg("Cannot send request")
 		}
 	}
 }
 
-func withdraw(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
+func withdrawHandler(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
@@ -106,7 +107,7 @@ func withdraw(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		var withdraw orders.Withdraw
+		var withdraw models.Withdraw
 		err = json.NewDecoder(r.Body).Decode(&withdraw)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Cannot decode provided data: %q", err), http.StatusBadRequest)
@@ -114,18 +115,30 @@ func withdraw(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		if err := orders.Validate(withdraw.Order); err != nil {
+		if err := models.Validate(withdraw.Order); err != nil {
 			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 
 			return
 		}
 
-		err = ordersStore.Withdraw(requestContext, login, &withdraw)
-		if err != nil && errors.Is(err, orders.ErrInsufficientBalance) {
-			http.Error(w, err.Error(), http.StatusPaymentRequired)
+		balance, err := getBalance(requestContext, login, ordersStore)
+		if err != nil {
+			http.Error(
+				w,
+				fmt.Sprintf("couldn't get balance for %s: %q", login, err),
+				http.StatusInternalServerError,
+			)
 
 			return
 		}
+
+		if balance.Current.Sub(withdraw.Sum).LessThan(decimal.Zero) {
+			http.Error(w, "insufficient balance", http.StatusPaymentRequired)
+
+			return
+		}
+
+		err = ordersStore.Withdraw(requestContext, login, &withdraw)
 		if err != nil {
 			http.Error(
 				w,
@@ -136,4 +149,38 @@ func withdraw(ordersStore orders.Store) func(w http.ResponseWriter, r *http.Requ
 			return
 		}
 	}
+}
+
+func getBalance(ctx context.Context, login string, ordersStore orders.Store) (*models.Balance, error) {
+	var (
+		balance   models.Balance
+		withdrawn decimal.Decimal
+		accrual   decimal.Decimal
+	)
+
+	processedOrders, err := ordersStore.GetProcessedOrders(ctx, login)
+	if err != nil {
+		return nil, err
+	}
+
+	withdrawals, err := ordersStore.GetWithdrawals(ctx, login)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, order := range processedOrders {
+		accrual = order.Accrual.Add(accrual)
+	}
+
+	for _, withdraw := range withdrawals {
+		withdrawn = withdraw.Sum.Add(withdrawn)
+		accrual = accrual.Sub(withdraw.Sum)
+	}
+
+	balance = models.Balance{
+		Current:   accrual,
+		Withdrawn: withdrawn,
+	}
+
+	return &balance, nil
 }

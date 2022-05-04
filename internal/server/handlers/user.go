@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/go-rfe/loyalty-system/internal/models"
 	"github.com/go-rfe/loyalty-system/internal/repository/users"
 )
 
@@ -30,7 +31,7 @@ func userRegisterHandler(store users.Store, auth *jwtauth.JWTAuth) func(w http.R
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		var user users.User
+		var user models.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Cannot decode provided data: %q", err), http.StatusBadRequest)
@@ -41,6 +42,13 @@ func userRegisterHandler(store users.Store, auth *jwtauth.JWTAuth) func(w http.R
 		err = user.Validate()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+
+			return
+		}
+
+		err = user.SetPassword(user.Password)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 
 			return
 		}
@@ -85,7 +93,7 @@ func userLoginHandler(userStore users.Store, authToken *jwtauth.JWTAuth) func(w 
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		var user users.User
+		var user models.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Cannot decode provided data: %q", err), http.StatusBadRequest)
