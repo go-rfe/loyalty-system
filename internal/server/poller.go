@@ -39,6 +39,12 @@ func (pw *PollerWorker) Run(ctx context.Context, ordersStore orders.Store) {
 }
 
 func UpdateOrders(ctx context.Context, accrualClient accrual.Client, ordersStore orders.Store) {
+	statusesMap := map[string]string{
+		"INVALID":    "INVALID",
+		"PROCESSING": "PROCESSING",
+		"PROCESSED":  "PROCESSED",
+	}
+
 	skipStatuses := map[string]struct{}{
 		"REGISTERED": {},
 	}
@@ -51,7 +57,7 @@ func UpdateOrders(ctx context.Context, accrualClient accrual.Client, ordersStore
 		log.Error().Err(err).Msg("Poller couldn't get orders from store")
 	}
 
-	for _, order := range ordersSlice {
+	for i, order := range ordersSlice {
 		accrualOrder, err := accrualClient.GetOrder(getContext, order.Number)
 		if err != nil {
 			log.Error().Err(err).Msg("filed to get order from accrual")
@@ -62,7 +68,10 @@ func UpdateOrders(ctx context.Context, accrualClient accrual.Client, ordersStore
 			continue
 		}
 
-		if err := ordersStore.UpdateOrder(ctx, accrualOrder); err != nil {
+		ordersSlice[i].Status = statusesMap[accrualOrder.Status]
+		ordersSlice[i].Accrual = accrualOrder.Accrual
+
+		if err := ordersStore.UpdateOrder(ctx, &ordersSlice[i]); err != nil {
 			log.Error().Err(err).Msgf("filed to update %s order", accrualOrder.Number)
 		}
 	}

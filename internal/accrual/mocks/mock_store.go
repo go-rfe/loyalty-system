@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	models "github.com/go-rfe/loyalty-system/internal/models"
+	accrual "github.com/go-rfe/loyalty-system/internal/accrual"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,10 +36,10 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // GetOrder mocks base method.
-func (m *MockClient) GetOrder(arg0 context.Context, arg1 string) (*models.Order, error) {
+func (m *MockClient) GetOrder(arg0 context.Context, arg1 string) (*accrual.Accrual, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrder", arg0, arg1)
-	ret0, _ := ret[0].(*models.Order)
+	ret0, _ := ret[0].(*accrual.Accrual)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -6,9 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/go-rfe/logging/log"
-	"github.com/go-rfe/loyalty-system/internal/models"
 )
 
 const (
@@ -36,13 +33,10 @@ func NewAccrualClient(accrualSystemAddress string) *client {
 	return &ac
 }
 
-func (c *client) GetOrder(ctx context.Context, orderID string) (*models.Order, error) {
-	order := models.Order{
-		Number: orderID,
-	}
-	accrualOrder := accrual{}
+func (c *client) GetOrder(ctx context.Context, orderID string) (*Accrual, error) {
+	accrualOrder := Accrual{}
 
-	orderGetURL := c.serverURL + order.Number
+	orderGetURL := c.serverURL + orderID
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, orderGetURL, nil)
 	if err != nil {
 		return nil, err
@@ -52,31 +46,32 @@ func (c *client) GetOrder(ctx context.Context, orderID string) (*models.Order, e
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
-	switch resp.StatusCode {
-	case http.StatusOK:
-		break
-	case http.StatusNoContent:
-		return nil, ErrOrderNotRegistered
-	case http.StatusNotFound:
-		return nil, ErrOrderNotRegistered
-	case http.StatusTooManyRequests:
-		return nil, ErrTooManyRequests
-	default:
-		return nil, fmt.Errorf("server response: %s", resp.Status)
+	err = checkStatusCode(resp)
+	if err != nil {
+		return nil, err
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&accrualOrder)
 	if err != nil {
 		return nil, err
 	}
-	err = resp.Body.Close()
-	if err != nil {
-		log.Error().Err(err).Msg("couldn't close response body")
+
+	return &accrualOrder, nil
+}
+
+func checkStatusCode(resp *http.Response) error {
+	switch resp.StatusCode {
+	case http.StatusOK:
+		return nil
+	case http.StatusNoContent:
+		return ErrOrderNotRegistered
+	case http.StatusNotFound:
+		return ErrOrderNotRegistered
+	case http.StatusTooManyRequests:
+		return ErrTooManyRequests
+	default:
+		return fmt.Errorf("server response: %s", resp.Status)
 	}
-
-	order.Status = accrualOrder.Status
-	order.Accrual = accrualOrder.Accrual
-
-	return &order, nil
 }

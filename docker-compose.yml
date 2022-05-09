@@ -40,4 +40,4 @@ services:
      - "-accrual-port=8081"
      - "-accrual-database-uri=postgres://dbuser:dbpass@postgres:5432/loyalty"
     environment:
-      LOG_LEVEL: "DEBUG"
+      LOG_LEVEL: "ERROR"

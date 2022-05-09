@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/go-rfe/loyalty-system/internal/accrual"
 	accrualMocks "github.com/go-rfe/loyalty-system/internal/accrual/mocks"
 	"github.com/go-rfe/loyalty-system/internal/models"
 	ordersMocks "github.com/go-rfe/loyalty-system/internal/repository/orders/mocks"
@@ -14,7 +15,7 @@ import (
 
 type testOrders struct {
 	order        models.Order
-	accrualOrder *models.Order
+	accrualOrder *accrual.Accrual
 }
 
 type testPoller struct {
@@ -30,7 +31,7 @@ func TestUpdateOrders(t *testing.T) {
 				Number: "9278923470",
 				Status: "NEW",
 			},
-			accrualOrder: &models.Order{
+			accrualOrder: &accrual.Accrual{
 				Number:  "9278923470",
 				Status:  "PROCESSED",
 				Accrual: &accrualFiveHandreds,
@@ -41,7 +42,7 @@ func TestUpdateOrders(t *testing.T) {
 				Number: "346436439",
 				Status: "NEW",
 			},
-			accrualOrder: &models.Order{
+			accrualOrder: &accrual.Accrual{
 				Number: "346436439",
 				Status: "REGISTERED",
 			},
@@ -51,7 +52,7 @@ func TestUpdateOrders(t *testing.T) {
 				Number: "12345678903",
 				Status: "NEW",
 			},
-			accrualOrder: &models.Order{
+			accrualOrder: &accrual.Accrual{
 				Number: "12345678903",
 				Status: "INVALID",
 			},
@@ -64,7 +65,12 @@ func TestUpdateOrders(t *testing.T) {
 				store.EXPECT().GetUnprocessedOrders(gomock.Any()).Return([]models.Order{ordersForTests[0].order}, nil)
 				client.EXPECT().GetOrder(gomock.Any(),
 					ordersForTests[0].order.Number).Return(ordersForTests[0].accrualOrder, nil).Times(1)
-				store.EXPECT().UpdateOrder(gomock.Any(), ordersForTests[0].accrualOrder).Return(nil).Times(1)
+				order := &models.Order{
+					Number:  ordersForTests[0].accrualOrder.Number,
+					Status:  ordersForTests[0].accrualOrder.Status,
+					Accrual: ordersForTests[0].accrualOrder.Accrual,
+				}
+				store.EXPECT().UpdateOrder(gomock.Any(), order).Return(nil).Times(1)
 			},
 		},
 		{
@@ -73,7 +79,12 @@ func TestUpdateOrders(t *testing.T) {
 				store.EXPECT().GetUnprocessedOrders(gomock.Any()).Return([]models.Order{ordersForTests[1].order}, nil)
 				client.EXPECT().GetOrder(gomock.Any(),
 					ordersForTests[1].order.Number).Return(ordersForTests[1].accrualOrder, nil).Times(1)
-				store.EXPECT().UpdateOrder(gomock.Any(), ordersForTests[1].accrualOrder).Return(nil).Times(0)
+				order := &models.Order{
+					Number:  ordersForTests[1].accrualOrder.Number,
+					Status:  ordersForTests[1].accrualOrder.Status,
+					Accrual: ordersForTests[1].accrualOrder.Accrual,
+				}
+				store.EXPECT().UpdateOrder(gomock.Any(), order).Return(nil).Times(0)
 			},
 		},
 		{
@@ -82,7 +93,12 @@ func TestUpdateOrders(t *testing.T) {
 				store.EXPECT().GetUnprocessedOrders(gomock.Any()).Return([]models.Order{ordersForTests[2].order}, nil)
 				client.EXPECT().GetOrder(gomock.Any(),
 					ordersForTests[2].order.Number).Return(ordersForTests[2].accrualOrder, nil).Times(1)
-				store.EXPECT().UpdateOrder(gomock.Any(), ordersForTests[2].accrualOrder).Return(nil).Times(1)
+				order := &models.Order{
+					Number:  ordersForTests[2].accrualOrder.Number,
+					Status:  ordersForTests[2].accrualOrder.Status,
+					Accrual: ordersForTests[2].accrualOrder.Accrual,
+				}
+				store.EXPECT().UpdateOrder(gomock.Any(), order).Return(nil).Times(1)
 			},
 		},
 	}
