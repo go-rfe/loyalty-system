@@ -41,18 +41,18 @@ func (db *DBStore) CreateUser(ctx context.Context, login string, password string
 	return err
 }
 
-func (db *DBStore) ValidateUser(ctx context.Context, login string, password string) error {
+func (db *DBStore) GetUser(ctx context.Context, login string) (*models.User, error) {
 	var userPassword string
 	row := db.connection.QueryRowContext(ctx,
 		"SELECT password FROM users WHERE login = $1", login)
 
 	err := row.Scan(&userPassword)
-	if !errors.Is(err, nil) && !errors.Is(err, sql.ErrNoRows) {
-		return err
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, err
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return ErrUserNotFound
+		return nil, ErrUserNotFound
 	}
 
 	user := &models.User{
@@ -60,11 +60,7 @@ func (db *DBStore) ValidateUser(ctx context.Context, login string, password stri
 		Password: userPassword,
 	}
 
-	if err := user.CheckPassword(password); err != nil {
-		return models.ErrInvalidPassword
-	}
-
-	return err
+	return user, nil
 }
 
 func (db *DBStore) Close() error {

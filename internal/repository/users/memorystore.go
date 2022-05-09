@@ -38,18 +38,14 @@ func (m *InMemoryStore) CreateUser(_ context.Context, login string, password str
 	return nil
 }
 
-func (m *InMemoryStore) ValidateUser(_ context.Context, login string, password string) error {
+func (m *InMemoryStore) GetUser(_ context.Context, login string) (*models.User, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	user, ok := m.usersCache[login]
 	if !ok {
-		return ErrUserNotFound
+		return nil, ErrUserNotFound
 	}
 
-	if err := user.CheckPassword(password); err != nil {
-		return models.ErrInvalidPassword
-	}
-
-	return nil
+	return user, nil
 }

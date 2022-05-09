@@ -14,7 +14,7 @@ type User struct {
 	Password string `json:"password"`
 }
 
-func (u *User) Validate() error {
+func (u *User) ValidateFields() error {
 	if u.Login == "" {
 		return ErrInvalidLogin
 	}

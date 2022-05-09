@@ -39,7 +39,7 @@ func userRegisterHandler(store users.Store, auth *jwtauth.JWTAuth) func(w http.R
 			return
 		}
 
-		err = user.Validate()
+		err = user.ValidateFields()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 
@@ -101,37 +101,38 @@ func userLoginHandler(userStore users.Store, authToken *jwtauth.JWTAuth) func(w 
 			return
 		}
 
-		err = user.Validate()
+		err = user.ValidateFields()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 
 			return
 		}
 
-		err = userStore.ValidateUser(requestContext, user.Login, user.Password)
+		err = ValidateUser(requestContext, user, userStore)
 		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("Unauthorized: %q", err),
-				http.StatusUnauthorized,
-			)
+			http.Error(w, fmt.Sprintf("Unauthorized: %q", err), http.StatusUnauthorized)
 
 			return
 		}
 
 		userToken, err := getUserToken(user.Login, authToken)
 		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("Something went wrong during user login: %q", err),
-				http.StatusInternalServerError,
-			)
+			http.Error(w, fmt.Sprintf("Something went wrong during user login: %q", err), http.StatusInternalServerError)
 
 			return
 		}
 		w.Header().Set("Authorization", "Bearer "+userToken)
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+func ValidateUser(ctx context.Context, user models.User, userStore users.Store) error {
+	existingUser, err := userStore.GetUser(ctx, user.Login)
+	if err != nil {
+		return err
+	}
+
+	return existingUser.CheckPassword(user.Password)
 }
 
 func getUserToken(login string, auth *jwtauth.JWTAuth) (string, error) {

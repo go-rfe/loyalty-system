@@ -34,7 +34,7 @@ test: go-test go-vet
 
 compile: go-clean go-get-server build-server
 
-go-update: go-clean-cache go-tidy go-migrate
+go-update: go-clean-cache go-tidy
 
 go-clean:
 	@echo "  >  Cleaning build cache"
@@ -64,7 +64,3 @@ go-test:
 go-vet:
 	@echo "  >  Vet project..."
 	@go vet ./...
-
-go-migrate:
-	@echo "  >  Update migrations..."
-	@migrate -source file://db/migrations -database ${DATABASE_URI} up
