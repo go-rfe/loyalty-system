@@ -7,7 +7,12 @@ import (
 
 	"github.com/go-rfe/logging/log"
 	"github.com/go-rfe/loyalty-system/internal/models"
+	"github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4/stdlib" // init postgresql driver
+)
+
+const (
+	pgErrCodeUniqueViolation = "23505"
 )
 
 type DBStore struct {
@@ -23,27 +28,34 @@ func NewDBStore(connection *sql.DB) *DBStore {
 }
 
 func (db *DBStore) CreateOrder(ctx context.Context, login string, order string) error {
-	var existingOrder int64
-	var orderLogin string
-	row := db.connection.QueryRowContext(ctx,
-		"SELECT number, login FROM orders WHERE number = $1", order)
+	var pgErr *pgconn.PgError
 
-	err := row.Scan(&existingOrder, &orderLogin)
-	if !errors.Is(err, nil) && !errors.Is(err, sql.ErrNoRows) {
+	_, err := db.connection.ExecContext(ctx,
+		"INSERT INTO orders (number, login) VALUES ($1, $2)",
+		order, login)
+
+	switch {
+	case err != nil && errors.As(err, &pgErr) && pgErr.Code == pgErrCodeUniqueViolation:
+		var existingOrder string
+		var orderUser string
+
+		row := db.connection.QueryRowContext(ctx,
+			"SELECT number, login FROM orders WHERE number = $1", order)
+
+		err := row.Scan(&existingOrder, &orderUser)
+		if err != nil {
+			return err
+		}
+
+		if login != orderUser {
+			return ErrOtherOrderExists
+		}
+		return ErrOrderExists
+	case err != nil:
 		return err
 	}
 
-	if err == nil && login != orderLogin {
-		return ErrOtherOrderExists
-	}
-	if login == orderLogin {
-		return ErrOrderExists
-	}
-
-	_, err = db.connection.ExecContext(ctx,
-		"INSERT INTO orders (number, login) VALUES ($1, $2)", order, login)
-
-	return err
+	return nil
 }
 
 func (db *DBStore) UpdateOrder(ctx context.Context, order *models.Order) error {
