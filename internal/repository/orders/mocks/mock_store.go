@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	orders "github.com/go-rfe/loyalty-system/internal/repository/orders"
+	models "github.com/go-rfe/loyalty-system/internal/models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,10 +50,10 @@ func (mr *MockStoreMockRecorder) CreateOrder(arg0, arg1, arg2 interface{}) *gomo
 }
 
 // GetOrders mocks base method.
-func (m *MockStore) GetOrders(arg0 context.Context, arg1 string) ([]orders.Order, error) {
+func (m *MockStore) GetOrders(arg0 context.Context, arg1 string) ([]models.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrders", arg0, arg1)
-	ret0, _ := ret[0].([]orders.Order)
+	ret0, _ := ret[0].([]models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,10 +65,10 @@ func (mr *MockStoreMockRecorder) GetOrders(arg0, arg1 interface{}) *gomock.Call 
 }
 
 // GetProcessedOrders mocks base method.
-func (m *MockStore) GetProcessedOrders(arg0 context.Context, arg1 string) ([]orders.Order, error) {
+func (m *MockStore) GetProcessedOrders(arg0 context.Context, arg1 string) ([]models.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProcessedOrders", arg0, arg1)
-	ret0, _ := ret[0].([]orders.Order)
+	ret0, _ := ret[0].([]models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -80,10 +80,10 @@ func (mr *MockStoreMockRecorder) GetProcessedOrders(arg0, arg1 interface{}) *gom
 }
 
 // GetUnprocessedOrders mocks base method.
-func (m *MockStore) GetUnprocessedOrders(arg0 context.Context) ([]orders.Order, error) {
+func (m *MockStore) GetUnprocessedOrders(arg0 context.Context) ([]models.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUnprocessedOrders", arg0)
-	ret0, _ := ret[0].([]orders.Order)
+	ret0, _ := ret[0].([]models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -95,10 +95,10 @@ func (mr *MockStoreMockRecorder) GetUnprocessedOrders(arg0 interface{}) *gomock.
 }
 
 // GetWithdrawals mocks base method.
-func (m *MockStore) GetWithdrawals(arg0 context.Context, arg1 string) ([]orders.Withdraw, error) {
+func (m *MockStore) GetWithdrawals(arg0 context.Context, arg1 string) ([]models.Withdraw, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetWithdrawals", arg0, arg1)
-	ret0, _ := ret[0].([]orders.Withdraw)
+	ret0, _ := ret[0].([]models.Withdraw)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -110,7 +110,7 @@ func (mr *MockStoreMockRecorder) GetWithdrawals(arg0, arg1 interface{}) *gomock.
 }
 
 // UpdateOrder mocks base method.
-func (m *MockStore) UpdateOrder(arg0 context.Context, arg1 *orders.Order) error {
+func (m *MockStore) UpdateOrder(arg0 context.Context, arg1 *models.Order) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateOrder", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -124,7 +124,7 @@ func (mr *MockStoreMockRecorder) UpdateOrder(arg0, arg1 interface{}) *gomock.Cal
 }
 
 // Withdraw mocks base method.
-func (m *MockStore) Withdraw(arg0 context.Context, arg1 string, arg2 *orders.Withdraw) error {
+func (m *MockStore) Withdraw(arg0 context.Context, arg1 string, arg2 *models.Withdraw) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Withdraw", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)

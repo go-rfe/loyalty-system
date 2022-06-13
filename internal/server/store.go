@@ -27,9 +27,5 @@ func initStore(config *Config) (func() error, func() error) {
 	config.OrdersStore = ordersStore
 	log.Info().Msg("Using Database for orders storage")
 
-	return func() error {
-			return userStore.Close()
-		}, func() error {
-			return ordersStore.Close()
-		}
+	return userStore.Close, ordersStore.Close
 }

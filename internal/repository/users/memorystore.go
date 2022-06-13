@@ -3,16 +3,18 @@ package users
 import (
 	"context"
 	"sync"
+
+	"github.com/go-rfe/loyalty-system/internal/models"
 )
 
 type InMemoryStore struct {
-	usersCache map[string]*User
+	usersCache map[string]*models.User
 	mu         sync.RWMutex
 }
 
 func NewInMemoryStore() *InMemoryStore {
 	m := InMemoryStore{
-		usersCache: make(map[string]*User),
+		usersCache: make(map[string]*models.User),
 	}
 
 	return &m
@@ -26,12 +28,9 @@ func (m *InMemoryStore) CreateUser(_ context.Context, login string, password str
 		return ErrUserExists
 	}
 
-	user := &User{
-		Login: login,
-	}
-
-	if err := user.SetPassword(password); err != nil {
-		return err
+	user := &models.User{
+		Login:    login,
+		Password: password,
 	}
 
 	m.usersCache[login] = user
@@ -39,18 +38,14 @@ func (m *InMemoryStore) CreateUser(_ context.Context, login string, password str
 	return nil
 }
 
-func (m *InMemoryStore) ValidateUser(_ context.Context, login string, password string) error {
+func (m *InMemoryStore) GetUser(_ context.Context, login string) (*models.User, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	user, ok := m.usersCache[login]
 	if !ok {
-		return ErrUserNotFound
+		return nil, ErrUserNotFound
 	}
 
-	if err := user.CheckPassword(password); err != nil {
-		return ErrInvalidPassword
-	}
-
-	return nil
+	return user, nil
 }

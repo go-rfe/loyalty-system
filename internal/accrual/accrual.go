@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/go-rfe/loyalty-system/internal/repository/orders"
 	"github.com/shopspring/decimal"
 )
 
@@ -14,11 +13,11 @@ var (
 )
 
 type Client interface {
-	GetOrder(ctx context.Context, orderID string) (*orders.Order, error)
+	GetOrder(ctx context.Context, orderID string) (*Accrual, error)
 }
 
-type accrual struct {
-	Number  string          `json:"order"`
-	Status  string          `json:"status"`
-	Accrual decimal.Decimal `json:"accrual,omitempty"`
+type Accrual struct {
+	Number  string           `json:"order"`
+	Status  string           `json:"status"`
+	Accrual *decimal.Decimal `json:"Accrual,omitempty"`
 }

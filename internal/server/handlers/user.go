@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/go-rfe/loyalty-system/internal/models"
 	"github.com/go-rfe/loyalty-system/internal/repository/users"
 )
 
@@ -30,7 +31,7 @@ func userRegisterHandler(store users.Store, auth *jwtauth.JWTAuth) func(w http.R
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		var user users.User
+		var user models.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Cannot decode provided data: %q", err), http.StatusBadRequest)
@@ -38,9 +39,16 @@ func userRegisterHandler(store users.Store, auth *jwtauth.JWTAuth) func(w http.R
 			return
 		}
 
-		err = user.Validate()
+		err = user.ValidateFields()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+
+			return
+		}
+
+		err = user.SetPassword(user.Password)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 
 			return
 		}
@@ -85,7 +93,7 @@ func userLoginHandler(userStore users.Store, authToken *jwtauth.JWTAuth) func(w 
 		requestContext, requestCancel := context.WithTimeout(r.Context(), requestTimeout)
 		defer requestCancel()
 
-		var user users.User
+		var user models.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Cannot decode provided data: %q", err), http.StatusBadRequest)
@@ -93,37 +101,38 @@ func userLoginHandler(userStore users.Store, authToken *jwtauth.JWTAuth) func(w 
 			return
 		}
 
-		err = user.Validate()
+		err = user.ValidateFields()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 
 			return
 		}
 
-		err = userStore.ValidateUser(requestContext, user.Login, user.Password)
+		err = ValidateUser(requestContext, user, userStore)
 		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("Unauthorized: %q", err),
-				http.StatusUnauthorized,
-			)
+			http.Error(w, fmt.Sprintf("Unauthorized: %q", err), http.StatusUnauthorized)
 
 			return
 		}
 
 		userToken, err := getUserToken(user.Login, authToken)
 		if err != nil {
-			http.Error(
-				w,
-				fmt.Sprintf("Something went wrong during user login: %q", err),
-				http.StatusInternalServerError,
-			)
+			http.Error(w, fmt.Sprintf("Something went wrong during user login: %q", err), http.StatusInternalServerError)
 
 			return
 		}
 		w.Header().Set("Authorization", "Bearer "+userToken)
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+func ValidateUser(ctx context.Context, user models.User, userStore users.Store) error {
+	existingUser, err := userStore.GetUser(ctx, user.Login)
+	if err != nil {
+		return err
+	}
+
+	return existingUser.CheckPassword(user.Password)
 }
 
 func getUserToken(login string, auth *jwtauth.JWTAuth) (string, error) {
